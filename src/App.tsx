@@ -1,6 +1,9 @@
 // Modules
 import { Routes, Route } from "react-router-dom";
 
+// Components:
+import Header from "./components/Header";
+
 // Pages
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
@@ -8,6 +11,7 @@ import Signup from "./pages/Signup";
 function App() {
   return (
     <div>
+      <Header />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
