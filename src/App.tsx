@@ -11,7 +11,8 @@ import Signup from "./pages/Signup";
 function App() {
   return (
     <div>
-      <Header />
+      <Header user={null} />{" "}
+      {/* TODO: Update with actual user when logic is wired up */}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
