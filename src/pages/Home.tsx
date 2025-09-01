@@ -69,10 +69,11 @@ const Home = () => {
           <p className="mt-10 text-center text-lg text-slate-600">
             Not a member?
           </p>
-          <Link to="/signup">
-            <button className="bg-green-500 text-white py-2 px-4 rounded flex m-auto mt-2 hover:bg-green-600 cursor-pointer">
-              Sign up here
-            </button>
+          <Link
+            to="/signup"
+            className="bg-green-500 text-white py-2 px-4 rounded flex m-auto mt-2 hover:bg-green-600 cursor-pointer w-fit"
+          >
+            Sign up here
           </Link>
         </div>
       </div>
