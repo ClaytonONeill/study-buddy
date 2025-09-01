@@ -59,22 +59,21 @@ const Home = () => {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer"
+                // onClick={handleSignin()} TODO: Build out this function to sign in
               >
                 Sign in
               </button>
             </div>
           </form>
-
-          <p className="mt-10 text-center text-sm/6 text-gray-400">
-            Not a member?{" "}
-            <a
-              href="#"
-              className="font-semibold text-indigo-400 hover:text-indigo-300"
-            >
-              <Link to="/signup">Sign up here</Link>
-            </a>
+          <p className="mt-10 text-center text-lg text-slate-600">
+            Not a member?
           </p>
+          <Link to="/signup">
+            <button className="bg-green-500 text-white py-2 px-4 rounded flex m-auto mt-2 hover:bg-green-600 cursor-pointer">
+              Sign up here
+            </button>
+          </Link>
         </div>
       </div>
     </>
