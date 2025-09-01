@@ -1,6 +1,6 @@
 const Signup = () => {
   return (
-    <div className="flex min-h-full flex-col justify-center items-center w-fit mx-auto px-6 py-12 lg:px-8 border border-solid border-indigo-600 mt-12 rounded-2xl shadow-xl">
+    <div className="flex min-h-full flex-col justify-center items-center w-fit mx-auto px-6 py-12 lg:px-8 md:border md:border-solid md:border-indigo-600 mt-12 md:rounded-2xl md:shadow-xl">
       <form className="w-full max-w-lg">
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
