@@ -1,3 +1,6 @@
+// Modules
+import { Link } from "react-router-dom";
+
 const Home = () => {
   return (
     <>
@@ -40,14 +43,6 @@ const Home = () => {
                 >
                   Password
                 </label>
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-semibold text-indigo-400 hover:text-indigo-300"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
               </div>
               <div className="mt-2">
                 <input
@@ -77,7 +72,7 @@ const Home = () => {
               href="#"
               className="font-semibold text-indigo-400 hover:text-indigo-300"
             >
-              Sign up here
+              <Link to="/signup">Sign up here</Link>
             </a>
           </p>
         </div>
