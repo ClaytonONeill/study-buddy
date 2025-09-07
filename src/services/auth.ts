@@ -11,17 +11,22 @@ export async function login(email: string, password: string) {
 
 // For signup
 export async function signup(payload: {
-  email: string;
-  password: string;
+  first_name: string;
+  last_name: string;
+  username: string;
   industry: string;
-  role: string;
-  bio: string;
+  user_role: string;
+  bio?: string;
 }) {
-  const res = await fetch("/api/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  const res = await fetch(
+    "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/register",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }
+  );
   if (!res.ok) throw new Error("Signup failed");
+  else console.log(`Success! ${res}`);
   return res.json();
 }
