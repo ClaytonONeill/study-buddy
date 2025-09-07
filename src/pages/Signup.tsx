@@ -2,7 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Import your signup function
+// Auth
 import { signup } from "../services/auth";
 
 const Signup = () => {
@@ -63,8 +63,6 @@ const Signup = () => {
       });
 
       navigate("/dashboard");
-
-      // You might want to redirect or show success message here
     } catch (error) {
       console.error("Signup failed:", error);
       setError("Signup failed. Please try again.");
