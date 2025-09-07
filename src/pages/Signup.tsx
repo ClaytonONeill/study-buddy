@@ -1,9 +1,13 @@
+// Modules
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Import your signup function
 import { signup } from "../services/auth";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -57,6 +61,8 @@ const Signup = () => {
         user_role: "",
         bio: "",
       });
+
+      navigate("/dashboard");
 
       // You might want to redirect or show success message here
     } catch (error) {

@@ -21,7 +21,7 @@ const Home = () => {
                 htmlFor="email"
                 className="block text-sm/6 font-medium text-black"
               >
-                Email address
+                Username
               </label>
               <div className="mt-2">
                 <input
