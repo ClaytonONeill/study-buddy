@@ -43,6 +43,32 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 ---
 
+## Running Tests
+
+This project uses **[Testing Library](https://testing-library.com/)** (with [@testing-library/react](https://testing-library.com/docs/react-testing-library/intro/)) for unit and integration testing, along with **Vitest** as the test runner.
+
+To run all tests:
+
+```bash
+npm test
+```
+
+or
+
+```bash
+npm run test
+```
+
+To run tests in watch mode (re-run on file changes):
+
+```bash
+npm run test:watch
+```
+
+Test files are typically located alongside your components and use the `.test.tsx` or `.test.ts` extension.
+
+---
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
