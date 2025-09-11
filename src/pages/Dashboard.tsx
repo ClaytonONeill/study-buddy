@@ -38,32 +38,32 @@ const Dashboard = () => {
 
   return (
     <div className="p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* KPI Row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-white shadow rounded-lg p-6 text-center">
+          <div className="bg-white shadow rounded-lg p-6 text-center border border-gray-300">
             <p className="text-3xl font-bold text-green-600">5</p>
             <p className="text-gray-500">Completed Certifications</p>
           </div>
-          <div className="bg-white shadow rounded-lg p-6 text-center">
+          <div className="bg-white shadow rounded-lg p-6 text-center border border-gray-300">
             <p className="text-3xl font-bold text-yellow-600">5</p>
             <p className="text-gray-500">Certifications in progress</p>
           </div>
-          <div className="bg-white shadow rounded-lg p-6 text-center">
+          <div className="bg-white shadow rounded-lg p-6 text-center border border-gray-300">
             <p className="text-3xl font-bold text-purple-600">5</p>
             <p className="text-gray-500">Total Hours Studied</p>
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="bg-white shadow rounded-lg px-4 py-3 flex items-center justify-between">
+        <div className="bg-white shadow rounded-lg px-4 py-3 flex items-center justify-between border border-gray-300">
           <button
             type="button"
             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
           >
             Add Certification +
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ">
             <span className="text-gray-600">Sort:</span>
             <select
               className="border rounded-lg px-3 py-1.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -80,7 +80,7 @@ const Dashboard = () => {
         </div>
 
         {/* Active Certs */}
-        <div className="bg-white shadow rounded-lg p-4">
+        <div className="bg-white shadow rounded-lg p-4 border border-gray-300">
           <div className="space-y-3">
             {sortedCerts.map((c) => (
               <div
@@ -124,7 +124,7 @@ const Dashboard = () => {
         {/* Bottom Panels */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Cert History */}
-          <div className="bg-white shadow rounded-lg p-4">
+          <div className="bg-white shadow rounded-lg p-4 border border-gray-300">
             <h3 className="font-semibold mb-3">Certifications</h3>
             <div className="space-y-2">
               {certHistory.map((r) => (
@@ -148,11 +148,11 @@ const Dashboard = () => {
           </div>
 
           {/* Tools  */}
-          <div className="bg-white shadow rounded-lg p-4">
+          <div className="bg-white shadow rounded-lg p-4 border border-gray-300">
             <h3 className="font-semibold mb-3">Tools</h3>
-            <div className="flex items-center gap-4 border border-gray-200 rounded-lg p-4">
-              <div className="w-20 h-28 rounded-xl border border-gray-200 grid place-items-center">
-                <span className="text-3xl"></span>
+            <div className="flex items-center gap-4 border border-gray-300 rounded-lg p-4">
+              <div className="w-20 h-28 rounded-xl border border-gray-300 grid place-items-center">
+                <span className="text-3xl">F</span>
               </div>
               <div>
                 <p className="font-semibold">Flash Card Generator</p>
