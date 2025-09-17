@@ -22,7 +22,6 @@ export async function login(
   const data = await res.json();
   localStorage.setItem("token", data.token);
 
-  // update user immediately
   const user = getUserFromToken(data.token);
   setUser(user);
 
@@ -57,7 +56,6 @@ export async function signup(
   // Save the JWT
   localStorage.setItem("token", data.token);
 
-  // Update user state immediately
   const user = getUserFromToken(data.token);
   setUser(user);
 
@@ -71,11 +69,7 @@ export function useSignout(setUser: React.Dispatch<React.SetStateAction<any>>) {
   function signout() {
     // Remove JWT from storage
     localStorage.removeItem("token");
-
-    // Clear auth state
     setUser(null);
-
-    // Redirect home
     navigate("/");
   }
 

@@ -42,7 +42,6 @@ const Signup = ({ setUser }: SignupProps) => {
     setError("");
 
     try {
-      // Create payload (excluding password since your signup function doesn't expect it)
       const payload = {
         first_name: formData.first_name,
         last_name: formData.last_name,
