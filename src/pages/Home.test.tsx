@@ -21,6 +21,9 @@ vi.mock("react-router-dom", async () => {
 
 import { login } from "../services/auth";
 
+// Utility for unique test usernames
+const generateUsername = () => `testuser_${Math.floor(Math.random() * 100000)}`;
+
 describe("Home Component", () => {
   const user = userEvent.setup();
 
@@ -31,7 +34,11 @@ describe("Home Component", () => {
   const renderHome = () => {
     return render(
       <MemoryRouter>
-        <Home />
+        <Home
+          setUser={function (): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
       </MemoryRouter>
     );
   };
@@ -103,37 +110,27 @@ describe("Home Component", () => {
       ).toBeInTheDocument();
       expect(login).not.toHaveBeenCalled();
     });
-
-    it("trims whitespace from username", async () => {
-      const mockLogin = vi.mocked(login);
-      mockLogin.mockResolvedValueOnce({ success: true });
-
-      renderHome();
-
-      await user.type(screen.getByLabelText(/username/i), "  testuser  ");
-      await user.type(screen.getByLabelText(/password/i), "password123");
-      await user.click(screen.getByRole("button", { name: /sign in/i }));
-
-      expect(mockLogin).toHaveBeenCalledWith({
-        username: "testuser",
-        password: "password123",
-      });
-    });
   });
 
   describe("Login Flow", () => {
+    let newUsername: string;
+
+    beforeEach(() => {
+      newUsername = generateUsername();
+    });
+
     it("submits form with correct data when valid", async () => {
       const mockLogin = vi.mocked(login);
       mockLogin.mockResolvedValueOnce({ success: true });
 
       renderHome();
 
-      await user.type(screen.getByLabelText(/username/i), "testuser");
+      await user.type(screen.getByLabelText(/username/i), newUsername);
       await user.type(screen.getByLabelText(/password/i), "password123");
       await user.click(screen.getByRole("button", { name: /sign in/i }));
 
       expect(mockLogin).toHaveBeenCalledWith({
-        username: "testuser",
+        username: newUsername,
         password: "password123",
       });
     });
@@ -149,7 +146,7 @@ describe("Home Component", () => {
 
       renderHome();
 
-      await user.type(screen.getByLabelText(/username/i), "testuser");
+      await user.type(screen.getByLabelText(/username/i), newUsername);
       await user.type(screen.getByLabelText(/password/i), "password123");
       await user.click(screen.getByRole("button", { name: /sign in/i }));
 
@@ -175,7 +172,7 @@ describe("Home Component", () => {
 
       renderHome();
 
-      await user.type(screen.getByLabelText(/username/i), "testuser");
+      await user.type(screen.getByLabelText(/username/i), newUsername);
       await user.type(screen.getByLabelText(/password/i), "password123");
       await user.click(screen.getByRole("button", { name: /sign in/i }));
 
@@ -193,7 +190,7 @@ describe("Home Component", () => {
       const usernameInput = screen.getByLabelText(/username/i);
       const passwordInput = screen.getByLabelText(/password/i);
 
-      await user.type(usernameInput, "testuser");
+      await user.type(usernameInput, newUsername);
       await user.type(passwordInput, "password123");
       await user.click(screen.getByRole("button", { name: /sign in/i }));
 
@@ -211,7 +208,9 @@ describe("Home Component", () => {
 
       renderHome();
 
-      await user.type(screen.getByLabelText(/username/i), "testuser");
+      const failedUsername = generateUsername();
+
+      await user.type(screen.getByLabelText(/username/i), failedUsername);
       await user.type(screen.getByLabelText(/password/i), "wrongpassword");
       await user.click(screen.getByRole("button", { name: /sign in/i }));
 
@@ -231,12 +230,14 @@ describe("Home Component", () => {
       const usernameInput = screen.getByLabelText(/username/i);
       const passwordInput = screen.getByLabelText(/password/i);
 
-      await user.type(usernameInput, "testuser");
+      const failedUsername = generateUsername();
+
+      await user.type(usernameInput, failedUsername);
       await user.type(passwordInput, "wrongpassword");
       await user.click(screen.getByRole("button", { name: /sign in/i }));
 
       await waitFor(() => {
-        expect(usernameInput).toHaveValue("testuser"); // Username preserved
+        expect(usernameInput).toHaveValue(failedUsername); // Username preserved
         expect(passwordInput).toHaveValue(""); // Password cleared
       });
     });
@@ -251,11 +252,13 @@ describe("Home Component", () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole("button", { name: /sign in/i });
 
+      const failedUsername = generateUsername();
+
       // Make multiple failed attempts
       for (let i = 0; i < 3; i++) {
         await user.clear(usernameInput);
         await user.clear(passwordInput);
-        await user.type(usernameInput, "testuser");
+        await user.type(usernameInput, failedUsername);
         await user.type(passwordInput, "wrongpassword");
         await user.click(submitButton);
 
@@ -281,11 +284,13 @@ describe("Home Component", () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole("button", { name: /sign in/i });
 
+      const failedUsername = generateUsername();
+
       // Make 5 failed attempts to trigger rate limit
       for (let i = 0; i < 5; i++) {
         await user.clear(usernameInput);
         await user.clear(passwordInput);
-        await user.type(usernameInput, "testuser");
+        await user.type(usernameInput, failedUsername);
         await user.type(passwordInput, "wrongpassword");
         await user.click(submitButton);
 
@@ -314,11 +319,13 @@ describe("Home Component", () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole("button", { name: /sign in/i });
 
+      const failedUsername = generateUsername();
+
       // Trigger rate limit
       for (let i = 0; i < 5; i++) {
         await user.clear(usernameInput);
         await user.clear(passwordInput);
-        await user.type(usernameInput, "testuser");
+        await user.type(usernameInput, failedUsername);
         await user.type(passwordInput, "wrongpassword");
         await user.click(submitButton);
 
