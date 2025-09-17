@@ -5,7 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 // Auth
 import { login } from "../services/auth";
 
-const Home = () => {
+// Interface
+interface HomeProps {
+  setUser: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const Home = ({ setUser }: HomeProps) => {
   const navigate = useNavigate();
 
   const [loginFormData, setLoginFormData] = useState({
@@ -72,7 +77,7 @@ const Home = () => {
         password: loginFormData.password,
       };
 
-      const result = await login(payload);
+      const result = await login(payload, setUser);
       console.log("Sign in successful:", result);
 
       // Clear form and reset attempt counter on success

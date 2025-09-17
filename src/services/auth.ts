@@ -1,6 +1,13 @@
+// Modules
 import { useNavigate } from "react-router-dom";
 
-export async function login(payload: { username: string; password: string }) {
+// Services
+import { getUserFromToken } from "./jwtDecode";
+
+export async function login(
+  payload: { username: string; password: string },
+  setUser: React.Dispatch<React.SetStateAction<any>>
+) {
   const res = await fetch(
     "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/login",
     {
@@ -12,24 +19,28 @@ export async function login(payload: { username: string; password: string }) {
 
   if (!res.ok) throw new Error("Login failed");
 
-  const signInData = await res.json();
+  const data = await res.json();
+  localStorage.setItem("token", data.token);
 
-  // Store the JWT in localStorage
-  localStorage.setItem("token", signInData.token);
+  // update user immediately
+  const user = getUserFromToken(data.token);
+  setUser(user);
 
-  console.log("Successful sign in!");
-  return signInData;
+  return data;
 }
 
 // For signup
-export async function signup(payload: {
-  first_name: string;
-  last_name: string;
-  username: string;
-  industry: string;
-  user_role: string;
-  bio?: string;
-}) {
+export async function signup(
+  payload: {
+    first_name: string;
+    last_name: string;
+    username: string;
+    industry: string;
+    user_role: string;
+    bio?: string;
+  },
+  setUser: React.Dispatch<React.SetStateAction<any>>
+) {
   const res = await fetch(
     "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/register",
     {
@@ -38,19 +49,23 @@ export async function signup(payload: {
       body: JSON.stringify(payload),
     }
   );
+
   if (!res.ok) throw new Error("Signup failed");
 
-  const signUpData = await res.json();
+  const data = await res.json();
 
-  localStorage.setItem("token", signUpData.token);
+  // Save the JWT
+  localStorage.setItem("token", data.token);
 
-  console.log("Successful sign up!");
-  return signUpData;
+  // Update user state immediately
+  const user = getUserFromToken(data.token);
+  setUser(user);
+
+  console.log("Signup successful!");
+  return data;
 }
 
 export function useSignout(setUser: React.Dispatch<React.SetStateAction<any>>) {
-  console.log("hitting this?");
-
   const navigate = useNavigate();
 
   function signout() {

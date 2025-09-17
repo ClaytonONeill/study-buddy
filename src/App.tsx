@@ -2,6 +2,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect, type JSX } from "react";
 
+// Services
+import { getUserFromToken } from "./services/jwtDecode";
+
 // Components
 import Header from "./components/Header";
 
@@ -23,11 +26,9 @@ function App() {
   const [user, setUser] = useState<null | { username: string }>(null);
 
   useEffect(() => {
-    // On app load, check if token exists
     const token = localStorage.getItem("token");
     if (token) {
-      // Ideally decode token here and extract user info
-      setUser({ username: "placeholder" });
+      setUser(getUserFromToken(token));
     }
   }, []);
 
@@ -36,8 +37,8 @@ function App() {
       <Header user={user} setUser={setUser} />{" "}
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/" element={<Home setUser={setUser} />} />
+        <Route path="/signup" element={<Signup setUser={setUser} />} />
 
         {/* Protected Routes */}
         <Route

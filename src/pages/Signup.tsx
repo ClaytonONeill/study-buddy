@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 // Auth
 import { signup } from "../services/auth";
 
-const Signup = () => {
+// Interfaces
+interface SignupProps {
+  setUser: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const Signup = ({ setUser }: SignupProps) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -48,7 +53,7 @@ const Signup = () => {
         bio: formData.bio,
       };
 
-      const result = await signup(payload);
+      const result = await signup(payload, setUser);
       console.log("Signup successful:", result);
 
       // Reset form or redirect user
