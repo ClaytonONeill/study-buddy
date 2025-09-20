@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 // Auth
 import { signup } from "../services/auth";
 
-const Signup = () => {
+// Interfaces
+interface SignupProps {
+  setUser: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const Signup = ({ setUser }: SignupProps) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -37,7 +42,6 @@ const Signup = () => {
     setError("");
 
     try {
-      // Create payload (excluding password since your signup function doesn't expect it)
       const payload = {
         first_name: formData.first_name,
         last_name: formData.last_name,
@@ -48,7 +52,7 @@ const Signup = () => {
         bio: formData.bio,
       };
 
-      const result = await signup(payload);
+      const result = await signup(payload, setUser);
       console.log("Signup successful:", result);
 
       // Reset form or redirect user

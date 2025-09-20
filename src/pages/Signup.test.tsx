@@ -1,15 +1,15 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import Signup from "./Signup";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
+import Signup from "./Signup"; // Adjust the import path as needed
 
 // Mock the auth service
 vi.mock("../services/auth", () => ({
   signup: vi.fn(),
 }));
 
-// Mock useNavigate
+// Mock react-router-dom navigate
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
@@ -20,24 +20,24 @@ vi.mock("react-router-dom", async () => {
 });
 
 import { signup } from "../services/auth";
+const mockedSignup = vi.mocked(signup);
 
-describe("Signup Component", () => {
-  const user = userEvent.setup();
+// Helper component to wrap with router
+const SignupWithRouter = ({ setUser }: { setUser: any }) => (
+  <MemoryRouter>
+    <Signup setUser={setUser} />
+  </MemoryRouter>
+);
+
+describe("Signup", () => {
+  const mockSetUser = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  const renderSignup = () => {
-    return render(
-      <MemoryRouter>
-        <Signup />
-      </MemoryRouter>
-    );
-  };
-
-  it("renders all form fields", () => {
-    renderSignup();
+  it("renders all form fields correctly", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
@@ -51,189 +51,332 @@ describe("Signup Component", () => {
     ).toBeInTheDocument();
   });
 
-  it("updates form fields when user types", async () => {
-    renderSignup();
+  it("renders form fields with correct placeholders", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
-    const firstNameInput = screen.getByLabelText(/first name/i);
-    const lastNameInput = screen.getByLabelText(/last name/i);
-    const usernameInput = screen.getByLabelText(/username/i);
-    const bioInput = screen.getByLabelText(/bio/i);
-
-    await user.type(firstNameInput, "John");
-    await user.type(lastNameInput, "Doe");
-    await user.type(usernameInput, "johndoe");
-    await user.type(bioInput, "Test bio");
-
-    expect(firstNameInput).toHaveValue("John");
-    expect(lastNameInput).toHaveValue("Doe");
-    expect(usernameInput).toHaveValue("johndoe");
-    expect(bioInput).toHaveValue("Test bio");
+    expect(screen.getByPlaceholderText("Jane")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Doe")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("yourusername")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("******************")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Tell us about yourself!")
+    ).toBeInTheDocument();
   });
 
-  it("updates select fields when user selects options", async () => {
-    renderSignup();
+  it("renders dropdown options correctly", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
     const industrySelect = screen.getByLabelText(/industry/i);
     const roleSelect = screen.getByLabelText(/role/i);
 
-    await user.selectOptions(industrySelect, "Industry 1");
-    await user.selectOptions(roleSelect, "Role 2");
-
-    expect(industrySelect).toHaveValue("Industry 1");
-    expect(roleSelect).toHaveValue("Role 2");
+    expect(industrySelect).toBeInTheDocument();
+    expect(roleSelect).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Select Industry")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Select Role")).toBeInTheDocument();
   });
 
-  it("submits form with correct data when all fields are filled", async () => {
-    const mockSignup = vi.mocked(signup);
-    mockSignup.mockResolvedValueOnce({ success: true });
+  it("does not show error message initially", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
-    renderSignup();
-
-    // Fill out the form
-    await user.type(screen.getByLabelText(/first name/i), "John");
-    await user.type(screen.getByLabelText(/last name/i), "Doe");
-    await user.type(screen.getByLabelText(/username/i), "johndoe");
-    await user.type(screen.getByLabelText(/password/i), "password123");
-    await user.selectOptions(screen.getByLabelText(/industry/i), "Industry 1");
-    await user.selectOptions(screen.getByLabelText(/role/i), "Role 1");
-    await user.type(screen.getByLabelText(/bio/i), "Test bio");
-
-    // Submit form
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
-
-    // Verify signup was called with correct data
-    expect(mockSignup).toHaveBeenCalledWith({
-      first_name: "John",
-      last_name: "Doe",
-      username: "johndoe",
-      password: "password123",
-      industry: "Industry 1",
-      user_role: "Role 1",
-      bio: "Test bio",
-    });
+    expect(screen.queryByText(/signup failed/i)).not.toBeInTheDocument();
   });
 
-  it("shows loading state during form submission", async () => {
-    const mockSignup = vi.mocked(signup);
-    // Mock a delayed response
-    mockSignup.mockImplementation(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(() => resolve({ success: true }), 100)
-        )
+  it("shows submit button in default state", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
+
+    const submitButton = screen.getByRole("button", { name: /sign up/i });
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toHaveClass("bg-green-500");
+    expect(submitButton).not.toBeDisabled();
+  });
+
+  it("updates input values when user types", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
+
+    const firstNameInput = screen.getByLabelText(
+      /first name/i
+    ) as HTMLInputElement;
+    const usernameInput = screen.getByLabelText(
+      /username/i
+    ) as HTMLInputElement;
+    const bioTextarea = screen.getByLabelText(/bio/i) as HTMLTextAreaElement;
+
+    fireEvent.change(firstNameInput, { target: { value: "John" } });
+    fireEvent.change(usernameInput, { target: { value: "johntest" } });
+    fireEvent.change(bioTextarea, { target: { value: "I am a developer" } });
+
+    expect(firstNameInput.value).toBe("John");
+    expect(usernameInput.value).toBe("johntest");
+    expect(bioTextarea.value).toBe("I am a developer");
+  });
+
+  it("updates select values when user selects options", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
+
+    const industrySelect = screen.getByLabelText(
+      /industry/i
+    ) as HTMLSelectElement;
+    const roleSelect = screen.getByLabelText(/role/i) as HTMLSelectElement;
+
+    fireEvent.change(industrySelect, { target: { value: "Industry 2" } });
+    fireEvent.change(roleSelect, { target: { value: "Role 1" } });
+
+    expect(industrySelect.value).toBe("Industry 2");
+    expect(roleSelect.value).toBe("Role 1");
+  });
+
+  it("shows loading state when form is submitted", async () => {
+    mockedSignup.mockImplementation(
+      () => new Promise((resolve) => setTimeout(resolve, 100))
     );
 
-    renderSignup();
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
     // Fill required fields
-    await user.type(screen.getByLabelText(/first name/i), "John");
-    await user.type(screen.getByLabelText(/last name/i), "Doe");
-    await user.type(screen.getByLabelText(/username/i), "johndoe");
-    await user.type(screen.getByLabelText(/password/i), "password123");
-    await user.selectOptions(screen.getByLabelText(/industry/i), "Industry 1");
-    await user.selectOptions(screen.getByLabelText(/role/i), "Role 1");
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/username/i), {
+      target: { value: "johndoe" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/industry/i), {
+      target: { value: "Industry 1" },
+    });
+    fireEvent.change(screen.getByLabelText(/role/i), {
+      target: { value: "Role 1" },
+    });
 
     // Submit form
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
     // Check loading state
-    expect(
-      screen.getByRole("button", { name: /signing up.../i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /signing up.../i })
-    ).toBeDisabled();
+    expect(screen.getByText("Signing up...")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeDisabled();
+    expect(screen.getByRole("button")).toHaveClass("bg-gray-400");
 
-    // Wait for form to complete
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /sign up/i })
-      ).toBeInTheDocument();
+      expect(mockedSignup).toHaveBeenCalled();
     });
   });
 
-  it("displays error message when signup fails", async () => {
-    const mockSignup = vi.mocked(signup);
-    mockSignup.mockRejectedValueOnce(new Error("Signup failed"));
+  it("calls signup service with correct data on form submission", async () => {
+    mockedSignup.mockResolvedValue({ success: true });
 
-    renderSignup();
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
-    // Fill required fields
-    await user.type(screen.getByLabelText(/first name/i), "John");
-    await user.type(screen.getByLabelText(/last name/i), "Doe");
-    await user.type(screen.getByLabelText(/username/i), "johndoe");
-    await user.type(screen.getByLabelText(/password/i), "password123");
-    await user.selectOptions(screen.getByLabelText(/industry/i), "Industry 1");
-    await user.selectOptions(screen.getByLabelText(/role/i), "Role 1");
+    // Fill out form
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/username/i), {
+      target: { value: "johndoe" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/industry/i), {
+      target: { value: "Industry 2" },
+    });
+    fireEvent.change(screen.getByLabelText(/role/i), {
+      target: { value: "Role 3" },
+    });
+    fireEvent.change(screen.getByLabelText(/bio/i), {
+      target: { value: "Test bio" },
+    });
 
     // Submit form
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
-    // Wait for error message
+    await waitFor(() => {
+      expect(mockedSignup).toHaveBeenCalledWith(
+        {
+          first_name: "John",
+          last_name: "Doe",
+          username: "johndoe",
+          password: "password123",
+          industry: "Industry 2",
+          user_role: "Role 3",
+          bio: "Test bio",
+        },
+        mockSetUser
+      );
+    });
+  });
+
+  it("shows error message on signup failure", async () => {
+    mockedSignup.mockRejectedValue(new Error("Signup failed"));
+
+    render(<SignupWithRouter setUser={mockSetUser} />);
+
+    // Fill required fields
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/username/i), {
+      target: { value: "johndoe" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/industry/i), {
+      target: { value: "Industry 1" },
+    });
+    fireEvent.change(screen.getByLabelText(/role/i), {
+      target: { value: "Role 1" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+
     await waitFor(() => {
       expect(
-        screen.getByText(/signup failed. please try again./i)
+        screen.getByText(/signup failed. please try again/i)
       ).toBeInTheDocument();
     });
+
+    // Check that error div has correct styling
+    const errorDiv = screen.getByText(/signup failed. please try again/i);
+    expect(errorDiv).toHaveClass(
+      "bg-red-100",
+      "border-red-400",
+      "text-red-700"
+    );
   });
 
   it("navigates to dashboard on successful signup", async () => {
-    const mockSignup = vi.mocked(signup);
-    mockSignup.mockResolvedValueOnce({ success: true });
+    mockedSignup.mockResolvedValue({ success: true });
 
-    renderSignup();
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
     // Fill required fields
-    await user.type(screen.getByLabelText(/first name/i), "John");
-    await user.type(screen.getByLabelText(/last name/i), "Doe");
-    await user.type(screen.getByLabelText(/username/i), "johndoe");
-    await user.type(screen.getByLabelText(/password/i), "password123");
-    await user.selectOptions(screen.getByLabelText(/industry/i), "Industry 1");
-    await user.selectOptions(screen.getByLabelText(/role/i), "Role 1");
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/username/i), {
+      target: { value: "johndoe" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/industry/i), {
+      target: { value: "Industry 1" },
+    });
+    fireEvent.change(screen.getByLabelText(/role/i), {
+      target: { value: "Role 1" },
+    });
 
-    // Submit form
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
-    // Wait for navigation
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
     });
   });
 
-  it("resets form after successful signup", async () => {
-    const mockSignup = vi.mocked(signup);
-    mockSignup.mockResolvedValueOnce({ success: true });
+  it("resets form data on successful signup", async () => {
+    mockedSignup.mockResolvedValue({ success: true });
 
-    renderSignup();
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
-    const firstNameInput = screen.getByLabelText(/first name/i);
-    const usernameInput = screen.getByLabelText(/username/i);
+    const firstNameInput = screen.getByLabelText(
+      /first name/i
+    ) as HTMLInputElement;
+    const usernameInput = screen.getByLabelText(
+      /username/i
+    ) as HTMLInputElement;
 
-    // Fill form
-    await user.type(firstNameInput, "John");
-    await user.type(screen.getByLabelText(/last name/i), "Doe");
-    await user.type(usernameInput, "johndoe");
-    await user.type(screen.getByLabelText(/password/i), "password123");
-    await user.selectOptions(screen.getByLabelText(/industry/i), "Industry 1");
-    await user.selectOptions(screen.getByLabelText(/role/i), "Role 1");
+    // Fill and submit form
+    fireEvent.change(firstNameInput, { target: { value: "John" } });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(usernameInput, { target: { value: "johndoe" } });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/industry/i), {
+      target: { value: "Industry 1" },
+    });
+    fireEvent.change(screen.getByLabelText(/role/i), {
+      target: { value: "Role 1" },
+    });
 
-    // Submit form
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
 
-    // Wait for form to reset
     await waitFor(() => {
-      expect(firstNameInput).toHaveValue("");
-      expect(usernameInput).toHaveValue("");
+      expect(firstNameInput.value).toBe("");
+      expect(usernameInput.value).toBe("");
     });
   });
 
-  it("prevents form submission when required fields are empty", async () => {
-    renderSignup();
+  it("clears error message when form is resubmitted", async () => {
+    // First submission fails
+    mockedSignup.mockRejectedValueOnce(new Error("Signup failed"));
 
-    // Try to submit without filling fields
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    render(<SignupWithRouter setUser={mockSetUser} />);
 
-    // Verify signup was not called
-    expect(signup).not.toHaveBeenCalled();
+    // Fill required fields
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/username/i), {
+      target: { value: "johndoe" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByLabelText(/industry/i), {
+      target: { value: "Industry 1" },
+    });
+    fireEvent.change(screen.getByLabelText(/role/i), {
+      target: { value: "Role 1" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/signup failed. please try again/i)
+      ).toBeInTheDocument();
+    });
+
+    // Second submission succeeds
+    mockedSignup.mockResolvedValue({ success: true });
+    fireEvent.click(screen.getByRole("button", { name: /sign up/i }));
+
+    // Error should be cleared immediately on resubmission
+    expect(
+      screen.queryByText(/signup failed. please try again/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it("has required attributes on required fields", () => {
+    render(<SignupWithRouter setUser={mockSetUser} />);
+
+    expect(screen.getByLabelText(/first name/i)).toHaveAttribute("required");
+    expect(screen.getByLabelText(/last name/i)).toHaveAttribute("required");
+    expect(screen.getByLabelText(/username/i)).toHaveAttribute("required");
+    expect(screen.getByLabelText(/password/i)).toHaveAttribute("required");
+    expect(screen.getByLabelText(/industry/i)).toHaveAttribute("required");
+    expect(screen.getByLabelText(/role/i)).toHaveAttribute("required");
+    expect(screen.getByLabelText(/bio/i)).not.toHaveAttribute("required");
   });
 });
