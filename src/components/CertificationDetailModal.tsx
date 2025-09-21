@@ -157,6 +157,12 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
                 </div>
               </div>
             )}
+          <button
+            onClick={onClose}
+            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors hover:cursor-pointer"
+          >
+            Add Certification +
+          </button>
         </div>
 
         {/* Footer */}
