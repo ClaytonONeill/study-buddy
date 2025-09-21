@@ -2,35 +2,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Components
+import CertificationDetailModal from "../components/CertificationDetailModal";
+
 // Services
 import { handleCertificationSearch } from "../services/httpActions";
+
+// Utils
+import { formatLevel, getLevelStyles } from "../utilities/utils";
 
 // Interfaces
 interface Certification {
   title: string;
   uid: string;
   levels?: string[];
+  subtitle?: string;
+  url?: string;
+  icon_url?: string;
+  last_modified?: string;
+  type?: string;
+  certification_type?: string;
+  exams?: string[];
+  roles?: string[];
+  study_guide?: string[];
 }
-
-// Helper methods
-const formatLevel = (level: string): string => {
-  if (!level) return "";
-  return level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
-};
-
-const getLevelStyles = (level: string): string => {
-  switch (level.toLowerCase()) {
-    case "beginner":
-    case "easy":
-      return "bg-green-100 text-green-800 border-green-300";
-    case "intermediate":
-      return "bg-yellow-100 text-yellow-800 border-yellow-300";
-    case "advanced":
-      return "bg-red-100 text-red-800 border-red-300";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-300";
-  }
-};
 
 // Map levels to numeric values for sorting
 const levelRank: Record<string, number> = {
@@ -48,90 +43,16 @@ const AddCertification: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [filterLevel, setFilterLevel] = useState<string>("all");
 
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCertification, setSelectedCertification] =
+    useState<Certification | null>(null);
+
   // Hooks
   const navigate = useNavigate();
 
   // Constants
   const PRIMARY_LEVEL_INDEX: number = 0;
-
-  /*
-   * This is the running list of valid subjects to pass into the API.
-   * This would map to our user "industry" field
-   *
-   * Security & Compliance:
-   * "security"
-   * "compliance"
-   * "threat-protection"
-   * "information-protection-governance"
-   * "identity-access"
-   * "cloud-security"
-   *
-   * Cloud & Infrastructure:
-   * "cloud-computing"
-   * "virtual-machine"
-   * "networking"
-   * "migration"
-   * "devops"
-   * "solution-design"
-   * "architecture"
-   * "serverless-computing"
-   *
-   * Data & Databases:
-   * "data-engineering"
-   * "data-management"
-   * "data-modeling"
-   * "databases"
-   *
-   * AI & Advanced Technologies:
-   * "artificial-intelligence"
-   * "natural-language-processing"
-   * "blockchain"
-   * "machine-learning"
-   *
-   * Communication & Collaboration:
-   * "communication"
-   *
-   * Development
-   * "app-development"
-   * "accessibility"
-   */
-
-  /*
-   * Roles:
-   *
-   * Architecture & Management:
-   * "solution-architect"
-   * "technology-manager"
-   *
-   * Development & Engineering:
-   * "developer"
-   * "ai-engineer"
-   * "devops-engineer"
-   * "data-engineer"
-   * "data-scientist"
-   *
-   * Data & Database:
-   * "data-analyst"
-   * "database-administrator"
-   *
-   * Security & Identity:
-   * "security-engineer"
-   * "security-operations-analyst"
-   * "identity-access-admin"
-   * "ip-admin"
-   *
-   * Networking & Support:
-   * "network-engineer"
-   * "support-engineer"
-   *
-   * Business & Functional:
-   * "business-user"
-   * "functional-consultant"
-   *
-   * Other:
-   * "administrator"
-   * "student"
-   */
 
   // Effects
   useEffect(() => {
@@ -141,11 +62,7 @@ const AddCertification: React.FC = () => {
 
         const data = await handleCertificationSearch({
           type: "certifications",
-          // TODO: Update this to pull from current users profile, pass in as comma separated string '1,2,3,...'
           role: "security-engineer,ip-admin",
-          // TODO: we need to align the accepted subjects with our apps (industry) pathways.
-          // However, the Learn API is bad at filtering by subjects so we should use role instead...
-          // subjects: "blockchain",
         });
 
         const certs: Certification[] = data.certifications ?? [];
@@ -171,6 +88,34 @@ const AddCertification: React.FC = () => {
 
   const handleFilterChange = (level: string) => {
     setFilterLevel(level);
+  };
+
+  const handleSeeDetails = (cert: Certification) => {
+    setSelectedCertification(cert);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCertification(null);
+  };
+
+  // Convert Certification to CertificationDetails format for modal
+  const convertToModalData = (cert: Certification) => {
+    return {
+      uid: cert.uid,
+      title: cert.title,
+      subtitle: cert.subtitle || "",
+      url: cert.url || "",
+      icon_url: cert.icon_url || "",
+      last_modified: cert.last_modified || new Date().toISOString(),
+      type: cert.type || "cert",
+      certification_type: cert.certification_type || "role-based",
+      exams: cert.exams || [],
+      levels: cert.levels || [],
+      roles: cert.roles || [],
+      study_guide: cert.study_guide || [],
+    };
   };
 
   // Apply filter
@@ -255,12 +200,24 @@ const AddCertification: React.FC = () => {
               )}
             </li>
 
-            <button className="bg-transparent hover:bg-blue-600 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 mt-4 hover:border-transparent hover:cursor-pointer rounded">
+            <button
+              onClick={() => handleSeeDetails(cert)}
+              className="bg-transparent hover:bg-blue-600 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 mt-4 hover:border-transparent hover:cursor-pointer rounded"
+            >
               See details
             </button>
           </div>
         ))}
       </ul>
+
+      {/* Modal */}
+      {selectedCertification && (
+        <CertificationDetailModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          certificationData={convertToModalData(selectedCertification)}
+        />
+      )}
     </div>
   );
 };
