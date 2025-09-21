@@ -96,6 +96,43 @@ const AddCertification: React.FC = () => {
    * "accessibility"
    */
 
+  /*
+   * Roles:
+   *
+   * Architecture & Management:
+   * "solution-architect"
+   * "technology-manager"
+   *
+   * Development & Engineering:
+   * "developer"
+   * "ai-engineer"
+   * "devops-engineer"
+   * "data-engineer"
+   * "data-scientist"
+   *
+   * Data & Database:
+   * "data-analyst"
+   * "database-administrator"
+   *
+   * Security & Identity:
+   * "security-engineer"
+   * "security-operations-analyst"
+   * "identity-access-admin"
+   * "ip-admin"
+   *
+   * Networking & Support:
+   * "network-engineer"
+   * "support-engineer"
+   *
+   * Business & Functional:
+   * "business-user"
+   * "functional-consultant"
+   *
+   * Other:
+   * "administrator"
+   * "student"
+   */
+
   // Effects
   useEffect(() => {
     const fetchCertifications = async () => {
@@ -104,9 +141,11 @@ const AddCertification: React.FC = () => {
 
         const data = await handleCertificationSearch({
           type: "certifications",
-          // TODO: Update this to pull from current users profile
-          role: "developer",
-          // subject: '' TODO: we need to align the accepted subjects with our apps (industry) pathways.
+          // TODO: Update this to pull from current users profile, pass in as comma separated string '1,2,3,...'
+          role: "security-engineer,ip-admin",
+          // TODO: we need to align the accepted subjects with our apps (industry) pathways.
+          // However, the Learn API is bad at filtering by subjects so we should use role instead...
+          // subjects: "blockchain",
         });
 
         const certs: Certification[] = data.certifications ?? [];
