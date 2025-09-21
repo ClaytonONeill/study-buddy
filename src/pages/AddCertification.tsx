@@ -212,7 +212,7 @@ const AddCertification: React.FC = () => {
         {sortedResults.map((cert) => (
           <div
             key={cert.uid}
-            className="p-4 border rounded-lg shadow-sm hover:shadow-md transition bg-gray-50"
+            className="p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition bg-gray-50"
           >
             <li>
               <h2 className="font-semibold text-lg">{cert.title}</h2>
