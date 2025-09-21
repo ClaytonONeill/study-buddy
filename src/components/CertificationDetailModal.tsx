@@ -157,26 +157,6 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
                 </div>
               </div>
             )}
-
-          {/* Study Guide */}
-          {certificationData.study_guide &&
-            Array.isArray(certificationData.study_guide) &&
-            certificationData.study_guide.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Study Guide
-                </h3>
-                <div className="space-y-2">
-                  {certificationData.study_guide.map((guide, index) => (
-                    <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                      {typeof guide === "string"
-                        ? guide
-                        : JSON.stringify(guide)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
         </div>
 
         {/* Footer */}

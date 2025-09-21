@@ -8,9 +8,6 @@ import CertificationDetailModal from "../components/CertificationDetailModal";
 // Services
 import { handleCertificationSearch } from "../services/httpActions";
 
-// Utils
-import { formatLevel, getLevelStyles } from "../utilities/utils";
-
 // Interfaces
 interface Certification {
   title: string;
@@ -26,6 +23,26 @@ interface Certification {
   roles?: string[];
   study_guide?: string[];
 }
+
+// Helper methods
+const formatLevel = (level: string): string => {
+  if (!level) return "";
+  return level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
+};
+
+const getLevelStyles = (level: string): string => {
+  switch (level.toLowerCase()) {
+    case "beginner":
+    case "easy":
+      return "bg-green-100 text-green-800 border-green-300";
+    case "intermediate":
+      return "bg-yellow-100 text-yellow-800 border-yellow-300";
+    case "advanced":
+      return "bg-red-100 text-red-800 border-red-300";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-300";
+  }
+};
 
 // Map levels to numeric values for sorting
 const levelRank: Record<string, number> = {
@@ -66,7 +83,17 @@ const AddCertification: React.FC = () => {
         });
 
         const certs: Certification[] = data.certifications ?? [];
-        setResults(certs);
+
+        // Filter out retired certifications
+        const activeCerts = certs.filter((cert) => {
+          const subtitle = cert.subtitle || "";
+          return (
+            !subtitle.includes('div class="WARNING"') ||
+            !subtitle.includes("This certification has been retired.")
+          );
+        });
+
+        setResults(activeCerts);
       } catch (err: any) {
         setError(err.message || "Unknown error");
       } finally {
@@ -90,6 +117,7 @@ const AddCertification: React.FC = () => {
     setFilterLevel(level);
   };
 
+  // Handle certification details click - just use existing data
   const handleSeeDetails = (cert: Certification) => {
     setSelectedCertification(cert);
     setIsModalOpen(true);
