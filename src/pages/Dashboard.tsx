@@ -1,3 +1,5 @@
+// Modules
+import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 
 type Cert = {
@@ -57,10 +59,15 @@ const certHistory: CertHistory[] = [
 ];
 
 const Dashboard = () => {
+  // State
   const [sortBy, setSortBy] = useState<
     "due-desc" | "due-asc" | "progress" | "name"
   >("due-desc");
 
+  // Hooks
+  const navigate = useNavigate();
+
+  // Methods
   const sortedCerts = useMemo(() => {
     const rows = [...activeCerts];
     rows.sort((a, b) => {
@@ -79,6 +86,10 @@ const Dashboard = () => {
     });
     return rows;
   }, [sortBy]);
+
+  const handleNavigate = (location: String) => {
+    navigate(`/${location}`);
+  };
 
   return (
     <div className="p-6">
@@ -104,6 +115,7 @@ const Dashboard = () => {
           <button
             type="button"
             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition hover:cursor-pointer"
+            onClick={() => handleNavigate("addCertification")}
           >
             Add Certification +
           </button>

@@ -12,6 +12,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import AddCertification from "./pages/AddCertification";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
@@ -39,7 +40,6 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home setUser={setUser} />} />
         <Route path="/signup" element={<Signup setUser={setUser} />} />
-
         {/* Protected Routes */}
         <Route
           path="/dashboard"
@@ -49,7 +49,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/addCertification"
+          element={
+            <ProtectedRoute>
+              <AddCertification />
+            </ProtectedRoute>
+          }
+        />
         {/* Catch-all for undefined routes */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
