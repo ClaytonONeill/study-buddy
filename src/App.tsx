@@ -23,6 +23,15 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
   return children;
 }
 
+function PublicRoute({ children }: { children: JSX.Element }) {
+  const token = localStorage.getItem("token");
+  if (token) {
+    // Redirect to dashboard if user is already signed in
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+}
+
 function App() {
   const [user, setUser] = useState<null | { username: string }>(null);
 
@@ -37,9 +46,23 @@ function App() {
     <div>
       <Header user={user} setUser={setUser} />{" "}
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home setUser={setUser} />} />
-        <Route path="/signup" element={<Signup setUser={setUser} />} />
+        {/* Public Routes - redirect to dashboard if signed in */}
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Home setUser={setUser} />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <Signup setUser={setUser} />
+            </PublicRoute>
+          }
+        />
         {/* Protected Routes */}
         <Route
           path="/dashboard"
