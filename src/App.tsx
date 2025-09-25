@@ -12,6 +12,9 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import UserProfile from "./pages/UserProfilePage";
+import CertificationOverviewPage from "./pages/CertificationOverview";
+
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
@@ -48,8 +51,24 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           }
+          
         />
-
+ <Route
+          path="/user-profile"  
+          element={
+            <ProtectedRoute>
+              <UserProfile/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/certs"  
+          element={
+            <ProtectedRoute>
+              <CertificationOverviewPage/>
+            </ProtectedRoute>
+          }
+        />
         {/* Catch-all for undefined routes */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
