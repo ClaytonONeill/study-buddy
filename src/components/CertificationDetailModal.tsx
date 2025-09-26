@@ -1,9 +1,22 @@
 // Modules
-import React from "react";
+import React, { useState } from "react";
 
 // Utilities
-// Utils
 import { formatLevel, getLevelStyles } from "../utilities/utils";
+
+// Services
+import { addCertification } from "../services/userActions";
+
+interface CertificationParams {
+  title: string;
+  uid: string;
+  description: string;
+  cert_level: string;
+  earned_on: string;
+  expires_on: string;
+  ce_hours_required: number;
+  ce_hours_completed: number;
+}
 
 interface CertificationData {
   uid: string;
@@ -31,6 +44,8 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
   onClose,
   certificationData,
 }) => {
+  const [isAdding, setIsAdding] = useState(false);
+
   if (!isOpen) return null;
 
   const formatDate = (dateString: string) => {
@@ -43,6 +58,44 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
 
   const parseHtmlContent = (htmlString: string) => {
     return { __html: htmlString };
+  };
+
+  const handleAddCertification = async () => {
+    setIsAdding(true);
+    try {
+      // Get today's date for earned_on
+      const today = new Date().toISOString().split("T")[0];
+      // Set expires_on to 1 year from today (default)
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      const expires = expiryDate.toISOString().split("T")[0];
+
+      const certificationParams: CertificationParams = {
+        title: certificationData.title,
+        uid: certificationData.uid,
+        description: certificationData.subtitle || "No description available",
+        cert_level: certificationData.levels[0] || "intermediate",
+        earned_on: today,
+        expires_on: expires,
+        ce_hours_required: 35, // TODO:  Default value, might want to make this configurable.
+        ce_hours_completed: 0,
+      };
+
+      const result = await addCertification(certificationParams);
+      console.log("Certification added successfully:", result);
+
+      // Close the modal or show success message. TODO: display success/failure message to user on add.
+      onClose();
+
+      // TODO: Might want to trigger a refresh of the certifications list here
+      // or show a success toast notification
+    } catch (error) {
+      console.error("Failed to add certification:", error);
+      // TODO: Add error display logic here.
+      alert("Failed to add certification. Please try again.");
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -157,8 +210,16 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
                 </div>
               </div>
             )}
-          <button className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors hover:cursor-pointer">
-            Add Certification +
+          <button
+            onClick={handleAddCertification}
+            disabled={isAdding}
+            className={`inline-flex items-center px-4 py-2 rounded-lg transition-colors ${
+              isAdding
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-green-600 text-white hover:bg-green-700 hover:cursor-pointer"
+            }`}
+          >
+            {isAdding ? "Adding..." : "Add Certification +"}
           </button>
         </div>
 

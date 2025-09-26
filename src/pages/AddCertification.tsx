@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import CertificationDetailModal from "../components/CertificationDetailModal";
 
 // Services
-import { handleCertificationSearch } from "../services/httpActions";
+import { handleCertificationSearch } from "../services/userActions";
 
 // Interfaces
 interface Certification {
