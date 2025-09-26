@@ -281,6 +281,7 @@ const Dashboard = () => {
                       {Math.round(c.progress * 100)}%
                     </span>
                     <button
+                      onClick={() => handleNavigate("certs")} // TODO: Wire this up to pass in cert ID as well.
                       type="button"
                       className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 hover:cursor-pointer"
                       aria-label={`Open ${c.name}`}

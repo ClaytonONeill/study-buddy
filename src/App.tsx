@@ -83,7 +83,7 @@ function App() {
           }
         />
         <Route
-          path="/certs"
+          path="/certs" // TODO: This will need to take an ID parameter so that we can have it display for a specific cert.
           element={
             <ProtectedRoute>
               <CertificationOverviewPage />
