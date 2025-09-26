@@ -13,6 +13,8 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import AddCertification from "./pages/AddCertification";
+import UserProfile from "./pages/UserProfilePage";
+import CertificationOverviewPage from "./pages/CertificationOverview";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
@@ -69,6 +71,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/certs"
+          element={
+            <ProtectedRoute>
+              <CertificationOverviewPage />
             </ProtectedRoute>
           }
         />
