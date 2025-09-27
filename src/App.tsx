@@ -12,15 +12,24 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import AddCertification from "./pages/AddCertification";
 import UserProfile from "./pages/UserProfilePage";
 import CertificationOverviewPage from "./pages/CertificationOverview";
-
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
   if (!token) {
     // Redirect to home (or login) if no token
     return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
+function PublicRoute({ children }: { children: JSX.Element }) {
+  const token = localStorage.getItem("token");
+  if (token) {
+    // Redirect to dashboard if user is already signed in
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 }
@@ -39,10 +48,23 @@ function App() {
     <div>
       <Header user={user} setUser={setUser} />{" "}
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home setUser={setUser} />} />
-        <Route path="/signup" element={<Signup setUser={setUser} />} />
-
+        {/* Public Routes - redirect to dashboard if signed in */}
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Home setUser={setUser} />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <Signup setUser={setUser} />
+            </PublicRoute>
+          }
+        />
         {/* Protected Routes */}
         <Route
           path="/dashboard"
@@ -51,21 +73,28 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           }
-          
         />
- <Route
-          path="/user-profile"  
+        <Route
+          path="/user-profile"
           element={
             <ProtectedRoute>
-              <UserProfile/>
+              <UserProfile />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/certs"  
+          path="/certs" // TODO: This will need to take an ID parameter so that we can have it display for a specific cert.
           element={
             <ProtectedRoute>
-              <CertificationOverviewPage/>
+              <CertificationOverviewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addCertification"
+          element={
+            <ProtectedRoute>
+              <AddCertification />
             </ProtectedRoute>
           }
         />

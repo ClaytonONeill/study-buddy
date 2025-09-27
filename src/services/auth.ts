@@ -20,6 +20,7 @@ export async function login(
   if (!res.ok) throw new Error("Login failed");
 
   const data = await res.json();
+  console.log("token: ", data.token);
   localStorage.setItem("token", data.token);
 
   const user = getUserFromToken(data.token);
