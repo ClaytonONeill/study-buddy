@@ -1,5 +1,13 @@
-// TODO: These both need to be wired into their respective pages:
-export async function login(payload: { username: string; password: string }) {
+// Modules
+import { useNavigate } from "react-router-dom";
+
+// Services
+import { getUserFromToken } from "./jwtDecode";
+
+export async function login(
+  payload: { username: string; password: string },
+  setUser: React.Dispatch<React.SetStateAction<any>>
+) {
   const res = await fetch(
     "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/login",
     {
@@ -8,20 +16,31 @@ export async function login(payload: { username: string; password: string }) {
       body: JSON.stringify(payload),
     }
   );
+
   if (!res.ok) throw new Error("Login failed");
-  else console.log("Successful sign in!");
-  return res.json();
+
+  const data = await res.json();
+  console.log("token: ", data.token);
+  localStorage.setItem("token", data.token);
+
+  const user = getUserFromToken(data.token);
+  setUser(user);
+
+  return data;
 }
 
 // For signup
-export async function signup(payload: {
-  first_name: string;
-  last_name: string;
-  username: string;
-  industry: string;
-  user_role: string;
-  bio?: string;
-}) {
+export async function signup(
+  payload: {
+    first_name: string;
+    last_name: string;
+    username: string;
+    industry: string;
+    user_role: string;
+    bio?: string;
+  },
+  setUser: React.Dispatch<React.SetStateAction<any>>
+) {
   const res = await fetch(
     "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/register",
     {
@@ -30,7 +49,30 @@ export async function signup(payload: {
       body: JSON.stringify(payload),
     }
   );
+
   if (!res.ok) throw new Error("Signup failed");
-  else console.log(`Success! ${res}`);
-  return res.json();
+
+  const data = await res.json();
+
+  // Save the JWT
+  localStorage.setItem("token", data.token);
+
+  const user = getUserFromToken(data.token);
+  setUser(user);
+
+  console.log("Signup successful!");
+  return data;
+}
+
+export function useSignout(setUser: React.Dispatch<React.SetStateAction<any>>) {
+  const navigate = useNavigate();
+
+  function signout() {
+    // Remove JWT from storage
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/");
+  }
+
+  return signout;
 }

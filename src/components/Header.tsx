@@ -1,6 +1,11 @@
+// Modules
+import { useSignout } from "../services/auth";
+import { useNavigate } from "react-router-dom";
+
 // The props that the header can be is a user, which can be either of type User or null.
 interface HeaderProps {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
 }
 
 // User types contain a username, which must be a string.
@@ -9,7 +14,10 @@ interface User {
   username: string;
 }
 
-const Header = ({ user }: HeaderProps) => {
+const Header = ({ user, setUser }: HeaderProps) => {
+  const signout = useSignout(setUser);
+  const navigate = useNavigate();
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,11 +35,18 @@ const Header = ({ user }: HeaderProps) => {
                   Hello {user.username}
                 </span>
                 <button
-                  //   onClick={handleSignOut} TODO: Wire this up to actual signout method
-                  className="text-gray-500 hover:text-gray-700 text-sm transition-colors duration-200"
+                  onClick= {() => navigate("/user-profile")}
+                  className="bg-blue-600 text-black-500 hover:text-black-700 px-3 py-1 rounded-md text-sm transition-colors duration-200 hover:cursor-pointer"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={signout}
+                  className="bg-gray-200 text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md text-sm transition-colors duration-200 hover:cursor-pointer"
                 >
                   Sign Out
                 </button>
+                
               </div>
             )}
           </div>
