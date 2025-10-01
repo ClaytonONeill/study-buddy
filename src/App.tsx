@@ -41,7 +41,6 @@ function PublicRoute({ children }: { children: JSX.Element }) {
 function App() {
   const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
   const [user, setUser] = useState<null | { username: string }>(null);
-  const [loading, setLoading] = useState(true);
 
   // On mount, decode token and set user
   useEffect(() => {
@@ -56,10 +55,8 @@ function App() {
     const fetchData = async () => {
       if (!user) {
         setUserProfile(null);
-        setLoading(false);
         return;
       }
-      setLoading(true);
       try {
         // Fetch and parse user profile
         const profileResp = await getUserProfileData();
@@ -75,7 +72,6 @@ function App() {
       } catch (err) {
         setUserProfile(null);
       } finally {
-        setLoading(false);
       }
     };
     fetchData();
