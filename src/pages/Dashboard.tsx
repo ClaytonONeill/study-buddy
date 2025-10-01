@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { getUserCertifications } from "../services/userActions";
 
-// API response interfaces
+// Interfaces
 interface UserCertification {
   uid: string;
   ce_hours_required: number;
@@ -77,7 +77,7 @@ const Dashboard = () => {
   // Hooks
   const navigate = useNavigate();
 
-  // Call API on mount
+  // Effects
   useEffect(() => {
     const fetchCerts = async () => {
       try {

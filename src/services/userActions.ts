@@ -11,9 +11,37 @@ interface CertificationParams {
 }
 
 // GET
+export async function getUserProfileData() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+  try {
+    const res = await fetch(
+      "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/user",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ?? "",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to get user profile data ${res.statusText}`);
+    }
+
+    const userData = await res.json();
+    return userData;
+  } catch (error) {
+    console.error("Error getting user profile data", error);
+  }
+}
+
+// GET
 export async function getUserCertifications() {
   const token = localStorage.getItem("token");
-  console.log("token is: ", token);
   const res = await fetch(
     "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/certifications",
     {
@@ -35,7 +63,6 @@ export async function getUserCertifications() {
 // POST
 export async function addCertification(params: CertificationParams) {
   const token = localStorage.getItem("token");
-  console.log("adding cert");
   if (!token) {
     throw new Error("No authentication token found");
   }

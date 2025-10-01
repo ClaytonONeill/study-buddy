@@ -4,6 +4,7 @@ import { useState, useEffect, type JSX } from "react";
 
 // Services
 import { getUserFromToken } from "./services/jwtDecode";
+import { getUserProfileData } from "./services/userActions";
 
 // Components
 import Header from "./components/Header";
@@ -15,6 +16,9 @@ import Dashboard from "./pages/Dashboard";
 import AddCertification from "./pages/AddCertification";
 import UserProfile from "./pages/UserProfilePage";
 import CertificationOverviewPage from "./pages/CertificationOverview";
+
+// Types
+import type { UserProfile as UserProfileType } from "./types/UserProfile";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token");
@@ -35,8 +39,11 @@ function PublicRoute({ children }: { children: JSX.Element }) {
 }
 
 function App() {
+  const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
   const [user, setUser] = useState<null | { username: string }>(null);
+  const [loading, setLoading] = useState(true);
 
+  // On mount, decode token and set user
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -44,9 +51,39 @@ function App() {
     }
   }, []);
 
+  // Fetch user profile and certs when user is set
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) {
+        setUserProfile(null);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        // Fetch and parse user profile
+        const profileResp = await getUserProfileData();
+        let parsedProfile: UserProfileType | null = null;
+        if (profileResp?.body && typeof profileResp.body === "string") {
+          parsedProfile = JSON.parse(profileResp.body);
+        } else if (typeof profileResp === "string") {
+          parsedProfile = JSON.parse(profileResp);
+        } else {
+          parsedProfile = profileResp;
+        }
+        setUserProfile(parsedProfile);
+      } catch (err) {
+        setUserProfile(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [user]);
+
   return (
     <div>
-      <Header user={user} setUser={setUser} />{" "}
+      <Header user={user} setUser={setUser} />
       <Routes>
         {/* Public Routes - redirect to dashboard if signed in */}
         <Route
@@ -83,7 +120,7 @@ function App() {
           }
         />
         <Route
-          path="/certs" // TODO: This will need to take an ID parameter so that we can have it display for a specific cert.
+          path="/certs"
           element={
             <ProtectedRoute>
               <CertificationOverviewPage />
@@ -94,7 +131,11 @@ function App() {
           path="/addCertification"
           element={
             <ProtectedRoute>
-              <AddCertification />
+              {userProfile ? (
+                <AddCertification userProfile={userProfile} />
+              ) : (
+                <div>Loading...</div>
+              )}
             </ProtectedRoute>
           }
         />

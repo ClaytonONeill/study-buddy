@@ -8,7 +8,14 @@ import CertificationDetailModal from "../components/CertificationDetailModal";
 // Services
 import { handleCertificationSearch } from "../services/userActions";
 
+// Types
+import type { UserProfile as UserProfileType } from "../types/UserProfile";
+
 // Interfaces
+interface AddCertificationProps {
+  userProfile: UserProfileType;
+}
+
 interface Certification {
   title: string;
   uid: string;
@@ -52,7 +59,7 @@ const levelRank: Record<string, number> = {
   advanced: 3,
 };
 
-const AddCertification: React.FC = () => {
+const AddCertification = ({ userProfile }: AddCertificationProps) => {
   // State
   const [results, setResults] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
