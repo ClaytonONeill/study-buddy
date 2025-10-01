@@ -8,6 +8,9 @@ import { signup } from "../services/auth";
 // Config
 import { industryOptions } from "../config/config";
 
+// Utils
+import { formatUserRole } from "../utilities/utils";
+
 type IndustryKey = keyof typeof industryOptions;
 
 interface SignupProps {
@@ -240,9 +243,7 @@ const Signup = ({ setUser }: SignupProps) => {
                 </option>
                 {roleOptions.map((role) => (
                   <option key={role} value={role}>
-                    {role
-                      .replace(/-/g, " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    {formatUserRole(role)}
                   </option>
                 ))}
               </select>

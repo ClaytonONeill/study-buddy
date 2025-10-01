@@ -134,7 +134,11 @@ function App() {
               {userProfile ? (
                 <AddCertification userProfile={userProfile} />
               ) : (
-                <div>Loading...</div>
+                <div className="flex items-center justify-center min-h-screen">
+                  <div className="text-xl font-semibold animate-pulse">
+                    Loading...
+                  </div>
+                </div>
               )}
             </ProtectedRoute>
           }

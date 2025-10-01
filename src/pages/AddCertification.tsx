@@ -11,6 +11,9 @@ import { handleCertificationSearch } from "../services/userActions";
 // Types
 import type { UserProfile as UserProfileType } from "../types/UserProfile";
 
+// Utils
+import { formatUserRole } from "../utilities/utils";
+
 // Interfaces
 interface AddCertificationProps {
   userProfile: UserProfileType;
@@ -83,10 +86,9 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
     const fetchCertifications = async () => {
       try {
         setLoading(true);
-
         const data = await handleCertificationSearch({
           type: "certifications",
-          role: "security-engineer,ip-admin",
+          role: userProfile.user_role,
         });
 
         const certs: Certification[] = data.certifications ?? [];
@@ -185,6 +187,11 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
       </div>
 
       <h1 className="text-2xl font-bold mb-6">Available Certifications</h1>
+      <h2 className="mb-2">
+        {`Custom certification recommendations based on your role as a ${formatUserRole(
+          userProfile.user_role
+        )}`}
+      </h2>
       {/* Divider */}
       <div className="w-full max-w-3xl mb-6 border-t border-gray-300 opacity-60"></div>
       {/* Sort & Filter Controls */}
