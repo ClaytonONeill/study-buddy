@@ -1,5 +1,5 @@
 // Modules
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -8,7 +8,17 @@ import CertificationDetailModal from "../components/CertificationDetailModal";
 // Services
 import { handleCertificationSearch } from "../services/userActions";
 
+// Types
+import type { UserProfile as UserProfileType } from "../types/UserProfile";
+
+// Utils
+import { formatUserRole } from "../utilities/utils";
+
 // Interfaces
+interface AddCertificationProps {
+  userProfile: UserProfileType;
+}
+
 interface Certification {
   title: string;
   uid: string;
@@ -52,7 +62,7 @@ const levelRank: Record<string, number> = {
   advanced: 3,
 };
 
-const AddCertification: React.FC = () => {
+const AddCertification = ({ userProfile }: AddCertificationProps) => {
   // State
   const [results, setResults] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,10 +86,9 @@ const AddCertification: React.FC = () => {
     const fetchCertifications = async () => {
       try {
         setLoading(true);
-
         const data = await handleCertificationSearch({
           type: "certifications",
-          role: "security-engineer,ip-admin",
+          role: userProfile.user_role,
         });
 
         const certs: Certification[] = data.certifications ?? [];
@@ -178,6 +187,11 @@ const AddCertification: React.FC = () => {
       </div>
 
       <h1 className="text-2xl font-bold mb-6">Available Certifications</h1>
+      <h2 className="mb-2">
+        {`Custom certification recommendations based on your role as a ${formatUserRole(
+          userProfile.user_role
+        )}`}
+      </h2>
       {/* Divider */}
       <div className="w-full max-w-3xl mb-6 border-t border-gray-300 opacity-60"></div>
       {/* Sort & Filter Controls */}

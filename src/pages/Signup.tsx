@@ -5,7 +5,14 @@ import { useNavigate } from "react-router-dom";
 // Auth
 import { signup } from "../services/auth";
 
-// Interfaces
+// Config
+import { industryOptions } from "../config/config";
+
+// Utils
+import { formatUserRole } from "../utilities/utils";
+
+type IndustryKey = keyof typeof industryOptions;
+
 interface SignupProps {
   setUser: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -13,7 +20,15 @@ interface SignupProps {
 const Signup = ({ setUser }: SignupProps) => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    first_name: string;
+    last_name: string;
+    username: string;
+    password: string;
+    industry: "" | IndustryKey;
+    user_role: string;
+    bio: string;
+  }>({
     first_name: "",
     last_name: "",
     username: "",
@@ -26,6 +41,13 @@ const Signup = ({ setUser }: SignupProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Get the roles for the selected industry
+  const roleOptions =
+    formData.industry &&
+    Object.prototype.hasOwnProperty.call(industryOptions, formData.industry)
+      ? industryOptions[formData.industry]
+      : [];
+
   const handleInputChange = (e: {
     target: { name: string; value: string };
   }) => {
@@ -33,6 +55,8 @@ const Signup = ({ setUser }: SignupProps) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+      // Reset user_role if industry changes
+      ...(name === "industry" ? { user_role: "" } : {}),
     }));
   };
 
@@ -185,9 +209,11 @@ const Signup = ({ setUser }: SignupProps) => {
                 <option value="" disabled hidden>
                   Select Industry
                 </option>
-                <option value="Industry 1">Industry 1</option>
-                <option value="Industry 2">Industry 2</option>
-                <option value="Industry 3">Industry 3</option>
+                {Object.keys(industryOptions).map((industry) => (
+                  <option key={industry} value={industry}>
+                    {industry}
+                  </option>
+                ))}
               </select>
               <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
                 ▼
@@ -210,13 +236,16 @@ const Signup = ({ setUser }: SignupProps) => {
                 value={formData.user_role}
                 onChange={handleInputChange}
                 required
+                disabled={!formData.industry}
               >
                 <option value="" disabled hidden>
-                  Select Role
+                  {formData.industry ? "Select Role" : "Select Industry First"}
                 </option>
-                <option value="Role 1">Role 1</option>
-                <option value="Role 2">Role 2</option>
-                <option value="Role 3">Role 3</option>
+                {roleOptions.map((role) => (
+                  <option key={role} value={role}>
+                    {formatUserRole(role)}
+                  </option>
+                ))}
               </select>
               <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
                 ▼
