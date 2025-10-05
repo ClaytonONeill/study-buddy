@@ -41,12 +41,14 @@ interface AddCertDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   certificationData: CertificationData;
+  onAddSuccess: () => void;
 }
 
 const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
   isOpen,
   onClose,
   certificationData,
+  onAddSuccess,
 }) => {
   const [isAdding, setIsAdding] = useState(false);
 
@@ -84,8 +86,7 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
       const result = await addCertification(certificationParams);
       console.log("Certification added successfully:", result);
 
-      // Close the modal or show success message. TODO: display success/failure message to user on add.
-      onClose();
+      onAddSuccess();
 
       // TODO: Might want to trigger a refresh of the certifications list here
       // or show a success toast notification
