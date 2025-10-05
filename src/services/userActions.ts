@@ -10,6 +10,15 @@ interface CertificationParams {
   ce_hours_completed: number;
 }
 
+interface UpdateCertificationParams {
+  uid: string;
+  certification_id: number;
+  earned_on: string;
+  expires_on: string;
+  ce_hours_required: number;
+  ce_hours_completed: number;
+}
+
 // GET
 export async function getUserProfileData() {
   const token = localStorage.getItem("token");
@@ -92,6 +101,41 @@ export async function addCertification(params: CertificationParams) {
   }
 }
 
+// PUT
+export async function updateUserCertification({
+  uid,
+  certification_id,
+  earned_on,
+  expires_on,
+  ce_hours_required,
+  ce_hours_completed,
+}: UpdateCertificationParams) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(
+    "https://p9iuv4325d.execute-api.us-east-1.amazonaws.com/certifications",
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ?? "",
+        certification_id: certification_id.toString(),
+        earned_on: earned_on,
+        expires_on: expires_on,
+        ce_hours_required: ce_hours_required.toString(),
+        ce_hours_completed: ce_hours_completed.toString(),
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Failed to update certification: ${res.statusText}`);
+  }
+
+  return await res.json();
+}
+
+// GET
 export async function handleCertificationSearch(
   params: Record<string, string>
 ) {

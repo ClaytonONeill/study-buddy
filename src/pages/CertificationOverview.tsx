@@ -1,5 +1,12 @@
+// Modules
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+// Services
+import { updateUserCertification } from "../services/userActions";
+
+// Utilities
+import { formatLevel } from "../utilities/utils";
 
 type Cert = {
   id: string;
@@ -13,13 +20,40 @@ type LocationState = Cert | undefined;
 
 const CertificationOverviewPage: React.FC = () => {
   const location = useLocation();
-  const cert = (location.state as LocationState) || undefined;
+  const navigate = useNavigate();
+
+  // Get cert data from navigation state
+  const {
+    ce_hours_completed,
+    ce_hours_required,
+    cert_level,
+    description,
+    earned_on,
+    expires_on,
+    title,
+    user_cert_id,
+  } = location.state?.cert;
 
   // Manual fields for now (static)
   const [dateCompleted, setDateCompleted] = useState<string>("");
   const [dateExpires, setDateExpires] = useState<string>("");
   const [ceHoursNeeded, setCeHoursNeeded] = useState<string>("");
   const [ceHoursComplete, setCeHoursComplete] = useState<string>("");
+
+  if (!user_cert_id) {
+    // Redirect message if no cert is provided
+    return (
+      <div className="p-6">
+        <h2>No certification data provided.</h2>
+        <button
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+          onClick={() => navigate("/dashboard")}
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
@@ -36,21 +70,10 @@ const CertificationOverviewPage: React.FC = () => {
         <div className="rounded-t-2xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 p-[1px]">
           <div className="rounded-t-2xl bg-white/70 px-6 py-5 bg-gradient-to-r from-blue-600 to-purple-600">
             <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">
-              {cert?.name ?? "Security +"}
+              {`${title} - ${formatLevel(cert_level)}`}
             </h1>
           </div>
         </div>
-
-        {/* Meta (optional provider/level line if present) */}
-        {(cert?.provider || cert?.level) && (
-          <div className="px-6 pt-4 pb-2">
-            <p className="text-sm text-slate-600">
-              {cert?.provider ?? ""}
-              {cert?.provider && cert?.level ? " • " : ""}
-              {cert?.level ?? ""}
-            </p>
-          </div>
-        )}
 
         {/* Content */}
         <div className="px-6 pb-6 pt-2">
@@ -60,7 +83,7 @@ const CertificationOverviewPage: React.FC = () => {
               <input
                 type="date"
                 className="input"
-                value={dateCompleted}
+                value={earned_on}
                 onChange={(e) => setDateCompleted(e.target.value)}
               />
             </FormField>
@@ -69,7 +92,7 @@ const CertificationOverviewPage: React.FC = () => {
               <input
                 type="date"
                 className="input"
-                value={dateExpires}
+                value={expires_on}
                 onChange={(e) => setDateExpires(e.target.value)}
               />
             </FormField>
@@ -81,19 +104,19 @@ const CertificationOverviewPage: React.FC = () => {
                 min="0"
                 step="0.5"
                 placeholder="e.g., 20"
-                value={ceHoursNeeded}
+                value={ce_hours_required}
                 onChange={(e) => setCeHoursNeeded(e.target.value)}
               />
             </FormField>
 
             <FormField label="CE Hours Complete">
               <input
-           type="number"
+                type="number"
                 className="input"
                 min="0"
                 step="0.5"
                 placeholder="e.g., 20"
-                value={ceHoursComplete}
+                value={ce_hours_completed}
                 onChange={(e) => setCeHoursComplete(e.target.value)}
               />
             </FormField>
@@ -105,17 +128,18 @@ const CertificationOverviewPage: React.FC = () => {
           {/* Description */}
           <section className="sm:col-span-2 rounded-xl border border-slate-200 p-4 bg-white/70 mb-6">
             <h2 className="font-medium mb-2">Description</h2>
-            <p className="text-sm text-slate-700">
-              {cert?.description ??
-                "Entry Leve Comptia Cert for Security practicioners. "}
-            </p>
+            <p
+              className="text-sm text-slate-700"
+              dangerouslySetInnerHTML={{ __html: description }}
+            ></p>
           </section>
 
           {/* Flashcards Placeholder */}
           <section className="sm:col-span-2 rounded-xl border border-slate-200 p-6 bg-white/70 h-80">
             <h2 className="font-medium mb-3">Flashcards</h2>
             <p className="text-sm text-slate-700">
-              Placeholder for flashcard module. This will display study cards once implemented.
+              Placeholder for flashcard module. This will display study cards
+              once implemented.
             </p>
           </section>
 
@@ -124,7 +148,7 @@ const CertificationOverviewPage: React.FC = () => {
             <button
               className="inline-flex w-full sm:w-auto justify-center rounded-xl bg-green-600 px-5 py-2.5 text-white
               font-medium shadow-sm transition hover:bg-green-700 active:bg-green-800 focus:outline-none
-              focus:ring focus:ring-green-200"
+              focus:ring focus:ring-green-200 hover:cursor-pointer"
               type="button"
               onClick={() => alert("Saved (stub)")}
             >
@@ -133,7 +157,7 @@ const CertificationOverviewPage: React.FC = () => {
             <button
               className="inline-flex w-full sm:w-auto justify-center rounded-xl bg-red-600 px-5 py-2.5 text-white
               font-medium shadow-sm transition hover:bg-red-700 active:bg-red-800 focus:outline-none
-              focus:ring focus:ring-red-200"
+              focus:ring focus:ring-red-200 hover:cursor-pointer"
               type="button"
               onClick={() => alert("Reset (stub)")}
             >

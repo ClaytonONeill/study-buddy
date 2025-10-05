@@ -8,22 +8,23 @@ type FormState = {
   industry: string;
   role: string;
   bio: string;
-  avatarUrl: string; 
+  avatarUrl: string;
 };
- const UserProfilePage: React.FC = () => {
+const UserProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<Partial<FormState> | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
         const resp = await getUserProfileData();
 
         let raw: any;
-        if (resp?.body && typeof resp.body === "string") raw = JSON.parse(resp.body);
+        if (resp?.body && typeof resp.body === "string")
+          raw = JSON.parse(resp.body);
         else if (typeof resp === "string") raw = JSON.parse(resp);
         else raw = resp ?? {};
 
@@ -84,7 +85,7 @@ type FormState = {
       </div>
     );
   }
-       
+
   return (
     <div className="min-h-screen w-full ">
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
@@ -103,40 +104,32 @@ type FormState = {
             <section className="md:col-span-4">
               <div className="flex flex-col items-center md:items-start">
                 <div className="relative">
-                   <img
-                     src={form.avatarUrl}
-                     alt="Profile"
-                     className="h-36 w-36 rounded-full object-cover shadow-md ring-4 ring-white dark:ring-slate-900 md:h-40 md:w-40 xl:h-48 xl:w-48"
-                    />
-                 </div>
+                  <img
+                    src={form.avatarUrl}
+                    alt="Profile"
+                    className="h-36 w-36 rounded-full object-cover shadow-md ring-4 ring-white dark:ring-slate-900 md:h-40 md:w-40 xl:h-48 xl:w-48"
+                  />
+                </div>
               </div>
             </section>
 
             {/* Fields */}
             <section className="md:col-span-8">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-               <FormField label="First Name">
-                <input
-                  className="input"
-                  value={form.firstName}
-                   readOnly
-                  />
+                <FormField label="First Name">
+                  <input className="input" value={form.firstName} readOnly />
                 </FormField>
 
                 <FormField label="Last Name">
-                  <input
-                    className="input"
-                    value={form.lastName}
-                    readOnly
-                  />
+                  <input className="input" value={form.lastName} readOnly />
                 </FormField>
 
                 <FormField label="Industry">
                   <input
-                   className="input"
-                   value={form.industry}
-                   placeholder="e.g., Manufacturing, Tech, Finance"
-                   readOnly
+                    className="input"
+                    value={form.industry}
+                    placeholder="e.g., Manufacturing, Tech, Finance"
+                    readOnly
                   />
                 </FormField>
 
@@ -159,7 +152,7 @@ type FormState = {
                   className="input h-38 md:h-46 w-full"
                   value={form.bio}
                   placeholder="Tell us about yourself..."
-                  
+                  readOnly
                 />
               </FormField>
 
@@ -168,15 +161,15 @@ type FormState = {
                 <button
                   className="inline-flex w-full sm:w-auto justify-center rounded-xl bg-gray-700 px-5 py-2.5 text-white
                      font-medium shadow-sm transition hover:bg-gray-800 focus:outline-none focus:ring focus:ring-gray-200"
-                   type="button"
-                onClick={handleBack}
-              >
-                ← Back
-             </button>
-            </div>             
-          </section>
+                  type="button"
+                  onClick={handleBack}
+                >
+                  ← Back
+                </button>
+              </div>
+            </section>
+          </div>
         </div>
-       </div>
       </main>
     </div>
   );
@@ -198,4 +191,3 @@ const FormField: React.FC<FormFieldProps> = ({ label, full, children }) => (
 );
 
 export default UserProfilePage;
-

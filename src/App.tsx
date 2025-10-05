@@ -116,7 +116,7 @@ function App() {
           }
         />
         <Route
-          path="/certs:id"
+          path="/certs"
           element={
             <ProtectedRoute>
               <CertificationOverviewPage />

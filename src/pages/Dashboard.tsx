@@ -91,10 +91,6 @@ const Dashboard = () => {
     fetchCerts();
   }, []);
 
-  useEffect(() => {
-    console.log("user certs are: ", userCertifications);
-  }, [userCertifications]);
-
   // Convert API data to component format
   const convertedCerts = useMemo(() => {
     return userCertifications.map(
@@ -107,8 +103,6 @@ const Dashboard = () => {
       })
     );
   }, [userCertifications]);
-
-  console.log(convertedCerts);
 
   // Methods
   const sortedCerts = useMemo(() => {
@@ -257,7 +251,16 @@ const Dashboard = () => {
                         {Math.round(c.progress * 100)}%
                       </span>
                       <button
-                        onClick={() => handleNavigate("certs")} // TODO: Wire this up to pass in cert ID as well.
+                        onClick={() => {
+                          const originalCert = userCertifications.find(
+                            (uc) => uc.user_cert_id.toString() === c.id
+                          );
+                          if (originalCert) {
+                            navigate("/certs", {
+                              state: { cert: originalCert },
+                            });
+                          }
+                        }}
                         type="button"
                         className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 hover:cursor-pointer"
                         aria-label={`Open ${c.name}`}
