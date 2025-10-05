@@ -48,6 +48,7 @@ const Signup = ({ setUser }: SignupProps) => {
       ? industryOptions[formData.industry]
       : [];
 
+  // Methods
   const handleInputChange = (e: {
     target: { name: string; value: string };
   }) => {
@@ -99,191 +100,206 @@ const Signup = ({ setUser }: SignupProps) => {
     }
   };
 
+  const handleReturnToSignin = () => {
+    navigate("/");
+  };
+
   return (
-    <div className="flex min-h-full flex-col justify-center items-center w-fit mx-auto px-6 py-12 lg:px-8 md:border md:border-solid md:border-indigo-600 mt-12 md:rounded-2xl md:shadow-xl">
-      <form className="w-full max-w-lg" onSubmit={handleSubmit}>
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
+    <>
+      <button
+        onClick={handleReturnToSignin}
+        className="block mx-auto mt-6 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition hover:cursor-pointer"
+        type="button"
+      >
+        Go Back
+      </button>
+      <div className="flex min-h-full flex-col justify-center items-center w-fit mx-auto px-6 py-12 lg:px-8 md:border md:border-solid md:border-indigo-600 mt-12 md:rounded-2xl md:shadow-xl">
+        <form className="w-full max-w-lg" onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
 
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-first-name"
-            >
-              First Name
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-              id="grid-first-name"
-              name="first_name"
-              type="text"
-              placeholder="Jane"
-              value={formData.first_name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="w-full md:w-1/2 px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-last-name"
-            >
-              Last Name
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-              id="grid-last-name"
-              name="last_name"
-              type="text"
-              placeholder="Doe"
-              value={formData.last_name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-username"
-            >
-              Username
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-              id="grid-username"
-              name="username"
-              type="text"
-              placeholder="yourusername"
-              value={formData.username}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-password"
-            >
-              Password
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-              id="grid-password"
-              name="password"
-              type="password"
-              placeholder="******************"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-6 mb-2">
-          <div className="w-full px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-industry"
-            >
-              Industry
-            </label>
-            <div className="relative">
-              <select
-                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-                id="grid-industry"
-                name="industry"
-                value={formData.industry}
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-first-name"
+              >
+                First Name
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                id="grid-first-name"
+                name="first_name"
+                type="text"
+                placeholder="Jane"
+                value={formData.first_name}
                 onChange={handleInputChange}
                 required
+              />
+            </div>
+            <div className="w-full md:w-1/2 px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-last-name"
               >
-                <option value="" disabled hidden>
-                  Select Industry
-                </option>
-                {Object.keys(industryOptions).map((industry) => (
-                  <option key={industry} value={industry}>
-                    {industry}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
-                ▼
-              </span>
+                Last Name
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                id="grid-last-name"
+                name="last_name"
+                type="text"
+                placeholder="Doe"
+                value={formData.last_name}
+                onChange={handleInputChange}
+                required
+              />
             </div>
           </div>
 
-          <div className="w-full px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-role"
-            >
-              Role
-            </label>
-            <div className="relative">
-              <select
-                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-                id="grid-role"
-                name="user_role"
-                value={formData.user_role}
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-username"
+              >
+                Username
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                id="grid-username"
+                name="username"
+                type="text"
+                placeholder="yourusername"
+                value={formData.username}
                 onChange={handleInputChange}
                 required
-                disabled={!formData.industry}
-              >
-                <option value="" disabled hidden>
-                  {formData.industry ? "Select Role" : "Select Industry First"}
-                </option>
-                {roleOptions.map((role) => (
-                  <option key={role} value={role}>
-                    {formatUserRole(role)}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
-                ▼
-              </span>
+              />
             </div>
           </div>
 
-          <div className="w-full px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="grid-bio"
-            >
-              Bio
-            </label>
-            <textarea
-              className="appearance-none block w-full h-72 bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
-              id="grid-bio"
-              name="bio"
-              placeholder="Tell us about yourself!"
-              value={formData.bio}
-              onChange={handleInputChange}
-            />
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-password"
+              >
+                Password
+              </label>
+              <input
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                id="grid-password"
+                name="password"
+                type="password"
+                placeholder="******************"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          className={`mt-5 py-2 px-4 rounded cursor-pointer ${
-            isLoading
-              ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-              : "bg-green-500 text-white hover:bg-green-600"
-          }`}
-          disabled={isLoading}
-        >
-          {isLoading ? "Signing up..." : "Sign up"}
-        </button>
-      </form>
-    </div>
+          <div className="flex flex-col gap-6 mb-2">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-industry"
+              >
+                Industry
+              </label>
+              <div className="relative">
+                <select
+                  className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                  id="grid-industry"
+                  name="industry"
+                  value={formData.industry}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="" disabled hidden>
+                    Select Industry
+                  </option>
+                  {Object.keys(industryOptions).map((industry) => (
+                    <option key={industry} value={industry}>
+                      {industry}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+                  ▼
+                </span>
+              </div>
+            </div>
+
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-role"
+              >
+                Role
+              </label>
+              <div className="relative">
+                <select
+                  className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                  id="grid-role"
+                  name="user_role"
+                  value={formData.user_role}
+                  onChange={handleInputChange}
+                  required
+                  disabled={!formData.industry}
+                >
+                  <option value="" disabled hidden>
+                    {formData.industry
+                      ? "Select Role"
+                      : "Select Industry First"}
+                  </option>
+                  {roleOptions.map((role) => (
+                    <option key={role} value={role}>
+                      {formatUserRole(role)}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700">
+                  ▼
+                </span>
+              </div>
+            </div>
+
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-bio"
+              >
+                Bio
+              </label>
+              <textarea
+                className="appearance-none block w-full h-72 bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-indigo-500"
+                id="grid-bio"
+                name="bio"
+                placeholder="Tell us about yourself!"
+                value={formData.bio}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className={`mt-5 py-2 px-4 rounded cursor-pointer ${
+              isLoading
+                ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                : "bg-green-500 text-white hover:bg-green-600"
+            }`}
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing up..." : "Sign up"}
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

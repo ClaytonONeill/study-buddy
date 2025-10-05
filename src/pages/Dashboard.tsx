@@ -280,23 +280,29 @@ const Dashboard = () => {
           <div className="bg-white shadow rounded-lg p-4 border border-gray-300">
             <h3 className="font-semibold mb-3">Completed Certifications</h3>
             <div className="space-y-2">
-              {userCertifications
-                .filter(
-                  ({ ce_hours_completed, ce_hours_required }) =>
-                    ce_hours_completed === ce_hours_required
-                )
-                .map(({ uid, title, earned_on, expires_on }) => (
-                  <div
-                    key={uid}
-                    className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
-                  >
-                    <CompletedCertification
-                      certName={title}
-                      dateCompleted={earned_on}
-                      expirationDate={expires_on}
-                    />
-                  </div>
-                ))}
+              {loading && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Loading...</p>
+                </div>
+              )}
+              {!loading &&
+                userCertifications
+                  .filter(
+                    ({ ce_hours_completed, ce_hours_required }) =>
+                      ce_hours_completed === ce_hours_required
+                  )
+                  .map(({ uid, title, earned_on, expires_on }) => (
+                    <div
+                      key={uid}
+                      className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
+                    >
+                      <CompletedCertification
+                        certName={title}
+                        dateCompleted={earned_on}
+                        expirationDate={expires_on}
+                      />
+                    </div>
+                  ))}
             </div>
           </div>
 
