@@ -213,7 +213,7 @@ const Dashboard = () => {
           {!loading && !error && sortedCerts.length > 0 && (
             <div className="space-y-3">
               {sortedCerts
-                .filter(({ progress }) => progress < 100)
+                .filter(({ progress }) => progress < 1)
                 .map((c) => (
                   <div
                     key={c.id}
@@ -288,7 +288,7 @@ const Dashboard = () => {
                 .map(({ uid, title, earned_on, expires_on }) => (
                   <div
                     key={uid}
-                    className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2"
+                    className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
                   >
                     <CompletedCertification
                       certName={title}
