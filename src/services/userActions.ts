@@ -11,7 +11,6 @@ interface CertificationParams {
 }
 
 interface UpdateCertificationParams {
-  uid: string;
   certification_id: number;
   earned_on: string;
   expires_on: string;
@@ -103,7 +102,6 @@ export async function addCertification(params: CertificationParams) {
 
 // PUT
 export async function updateUserCertification({
-  uid,
   certification_id,
   earned_on,
   expires_on,
@@ -119,20 +117,25 @@ export async function updateUserCertification({
       headers: {
         "Content-Type": "application/json",
         Authorization: token ?? "",
-        certification_id: certification_id.toString(),
-        earned_on: earned_on,
-        expires_on: expires_on,
-        ce_hours_required: ce_hours_required.toString(),
-        ce_hours_completed: ce_hours_completed.toString(),
       },
+      body: JSON.stringify({
+        user_cert_id: certification_id,
+        earned_on,
+        expires_on,
+        ce_hours_required,
+        ce_hours_completed,
+      }),
     }
   );
+
+  const data = await res.json();
+  console.log("response data:", data);
 
   if (!res.ok) {
     throw new Error(`Failed to update certification: ${res.statusText}`);
   }
 
-  return await res.json();
+  return data;
 }
 
 // GET

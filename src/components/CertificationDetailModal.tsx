@@ -2,7 +2,11 @@
 import React, { useState } from "react";
 
 // Utilities
-import { formatLevel, getLevelStyles } from "../utilities/utils";
+import {
+  formatLevel,
+  getLevelStyles,
+  parseHtmlContent,
+} from "../utilities/utils";
 
 // Services
 import { addCertification } from "../services/userActions";
@@ -54,10 +58,6 @@ const AddCertDetailModal: React.FC<AddCertDetailModalProps> = ({
       month: "long",
       day: "numeric",
     });
-  };
-
-  const parseHtmlContent = (htmlString: string) => {
-    return { __html: htmlString };
   };
 
   const handleAddCertification = async () => {
