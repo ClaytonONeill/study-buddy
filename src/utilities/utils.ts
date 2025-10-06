@@ -20,3 +20,7 @@ export const getLevelStyles = (level: string): string => {
 
 export const formatUserRole = (role: string) =>
   role.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
+export const parseHtmlContent = (htmlString: string) => {
+  return { __html: htmlString };
+};

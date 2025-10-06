@@ -23,7 +23,10 @@ const Header = ({ user, setUser }: HeaderProps) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl px-3 py-2 rounded-lg">
+            <div
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl px-3 py-2 rounded-lg hover:cursor-pointer"
+              onClick={() => navigate("/dashboard")}
+            >
               S.B
             </div>
           </div>
@@ -35,8 +38,8 @@ const Header = ({ user, setUser }: HeaderProps) => {
                   Hello {user.username}
                 </span>
                 <button
-                  onClick= {() => navigate("/user-profile")}
-                  className="bg-blue-600 text-black-500 hover:text-black-700 px-3 py-1 rounded-md text-sm transition-colors duration-200 hover:cursor-pointer"
+                  onClick={() => navigate("/user-profile")}
+                  className="bg-blue-600 text-white hover:text-black-700 hover:bg-blue-700 px-3 py-1 rounded-md text-sm transition-colors duration-200 hover:cursor-pointer"
                 >
                   Profile
                 </button>
@@ -46,7 +49,6 @@ const Header = ({ user, setUser }: HeaderProps) => {
                 >
                   Sign Out
                 </button>
-                
               </div>
             )}
           </div>

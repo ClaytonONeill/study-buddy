@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { getUserCertifications } from "../services/userActions";
 
+// Components
+import CompletedCertification from "../components/CompletedCertification";
+
 // Interfaces
 interface UserCertification {
   uid: string;
@@ -31,38 +34,6 @@ type Cert = {
   progress: number;
 };
 
-type CertHistory = {
-  id: string;
-  name: string;
-  type: string;
-  completed: string;
-  expires: string;
-};
-
-const certHistory: CertHistory[] = [
-  {
-    id: "h1",
-    name: "Linux Essentials",
-    type: "Cred",
-    completed: "2025-08-14",
-    expires: "2028-08-14",
-  },
-  {
-    id: "h2",
-    name: "Network+",
-    type: "Cred",
-    completed: "2025-09-01",
-    expires: "2028-09-01",
-  },
-  {
-    id: "h3",
-    name: "ITIL Foundation",
-    type: "Cred",
-    completed: "2025-09-10",
-    expires: "2028-09-10",
-  },
-];
-
 const Dashboard = () => {
   // State
   const [sortBy, setSortBy] = useState<
@@ -85,7 +56,6 @@ const Dashboard = () => {
         setError(null);
 
         const response = await getUserCertifications();
-        console.log("API response:", response);
 
         // Parse the response - it comes as { body: "stringified JSON" }
         let parsedResponse: CertificationResponse;
@@ -103,10 +73,6 @@ const Dashboard = () => {
           Array.isArray(parsedResponse.user_certifications)
         ) {
           setUserCertifications(parsedResponse.user_certifications);
-          console.log(
-            "Certifications loaded:",
-            parsedResponse.user_certifications
-          );
         } else {
           console.warn("No user_certifications found in response");
           setUserCertifications([]);
@@ -246,51 +212,64 @@ const Dashboard = () => {
 
           {!loading && !error && sortedCerts.length > 0 && (
             <div className="space-y-3">
-              {sortedCerts.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-200 rounded-lg px-4 py-3"
-                >
-                  {/* Left: name / type / due */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <strong className="min-w-[200px]">{c.name}</strong>
-                    <span className="text-gray-500">{c.type}</span>
-                    <span className="text-gray-700">
-                      Expires {new Date(c.due).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  {/* Right: progress */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-500 hidden sm:inline">
-                      CE Hours progress
-                    </span>
-                    <div
-                      className="w-40 h-3 bg-gray-200 rounded-full overflow-hidden"
-                      role="progressbar"
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={Math.round(c.progress * 100)}
-                    >
-                      <div
-                        className="h-full bg-green-500"
-                        style={{ width: `${Math.min(c.progress * 100, 100)}%` }}
-                      />
+              {sortedCerts
+                .filter(({ progress }) => progress < 1)
+                .map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-200 rounded-lg px-4 py-3"
+                  >
+                    {/* Left: name / type / due */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <strong className="min-w-[200px]">{c.name}</strong>
+                      <span className="text-gray-500">{c.type}</span>
+                      <span className="text-gray-700">
+                        Expires {new Date(c.due).toLocaleDateString()}
+                      </span>
                     </div>
-                    <span className="text-sm text-gray-600">
-                      {Math.round(c.progress * 100)}%
-                    </span>
-                    <button
-                      onClick={() => handleNavigate("certs")} // TODO: Wire this up to pass in cert ID as well.
-                      type="button"
-                      className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 hover:cursor-pointer"
-                      aria-label={`Open ${c.name}`}
-                    >
-                      ›
-                    </button>
+
+                    {/* Right: progress */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-500 hidden sm:inline">
+                        CE Hours progress
+                      </span>
+                      <div
+                        className="w-40 h-3 bg-gray-200 rounded-full overflow-hidden"
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={Math.round(c.progress * 100)}
+                      >
+                        <div
+                          className="h-full bg-green-500"
+                          style={{
+                            width: `${Math.min(c.progress * 100, 100)}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-600">
+                        {Math.round(c.progress * 100)}%
+                      </span>
+                      <button
+                        onClick={() => {
+                          const originalCert = userCertifications.find(
+                            (uc) => uc.user_cert_id.toString() === c.id
+                          );
+                          if (originalCert) {
+                            navigate("/certs", {
+                              state: { cert: originalCert },
+                            });
+                          }
+                        }}
+                        type="button"
+                        className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 hover:cursor-pointer"
+                        aria-label={`Open ${c.name}`}
+                      >
+                        ›
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
@@ -301,24 +280,29 @@ const Dashboard = () => {
           <div className="bg-white shadow rounded-lg p-4 border border-gray-300">
             <h3 className="font-semibold mb-3">Completed Certifications</h3>
             <div className="space-y-2">
-              {certHistory.map((r) => (
-                <div
-                  key={r.id}
-                  className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <strong className="min-w-[180px]">{r.name}</strong>
-                    <span className="text-gray-500">{r.type}</span>
-                    <span className="text-gray-700">
-                      Date Completed <br />
-                      {new Date(r.completed).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <span className="text-red-500">
-                    Expires {new Date(r.expires).toLocaleDateString()}
-                  </span>
+              {loading && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Loading...</p>
                 </div>
-              ))}
+              )}
+              {!loading &&
+                userCertifications
+                  .filter(
+                    ({ ce_hours_completed, ce_hours_required }) =>
+                      ce_hours_completed === ce_hours_required
+                  )
+                  .map(({ uid, title, earned_on, expires_on }) => (
+                    <div
+                      key={uid}
+                      className="flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
+                    >
+                      <CompletedCertification
+                        certName={title}
+                        dateCompleted={earned_on}
+                        expirationDate={expires_on}
+                      />
+                    </div>
+                  ))}
             </div>
           </div>
 

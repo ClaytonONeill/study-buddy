@@ -75,6 +75,9 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
   const [selectedCertification, setSelectedCertification] =
     useState<Certification | null>(null);
 
+  // Success message state
+  const [showSuccess, setShowSuccess] = useState(false);
+
   // Hooks
   const navigate = useNavigate();
 
@@ -111,7 +114,7 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
     };
 
     fetchCertifications();
-  }, []);
+  }, [userProfile.user_role]);
 
   // Methods
   const handleBack = () => {
@@ -135,6 +138,14 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCertification(null);
+  };
+
+  // Handle successful add from modal
+  const handleAddSuccess = () => {
+    setIsModalOpen(false);
+    setSelectedCertification(null);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2500);
   };
 
   // Convert Certification to CertificationDetails format for modal
@@ -175,6 +186,21 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen p-6 bg-white">
+      {/* Success Message */}
+      {showSuccess && (
+        <div
+          className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ease-in-out"
+          style={{ animation: "fadeInOut 2.5s" }}
+        >
+          <div className="bg-green-100 border border-green-300 text-green-800 px-6 py-3 rounded-lg shadow-lg text-lg font-semibold flex items-center gap-2 animate-bounce-in">
+            <span role="img" aria-label="success">
+              ✅
+            </span>
+            Certification added!
+          </div>
+        </div>
+      )}
+
       {/* Top Controls */}
       <div className="w-full max-w-3xl mb-4 flex justify-between items-center gap-4">
         {/* Back Button */}
@@ -258,8 +284,24 @@ const AddCertification = ({ userProfile }: AddCertificationProps) => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           certificationData={convertToModalData(selectedCertification)}
+          onAddSuccess={handleAddSuccess}
         />
       )}
+
+      {/* Animation keyframes */}
+      <style>
+        {`
+          @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px);}
+            10% { opacity: 1; transform: translateY(0);}
+            90% { opacity: 1; transform: translateY(0);}
+            100% { opacity: 0; transform: translateY(-20px);}
+          }
+          .animate-bounce-in {
+            animation: fadeInOut 2.5s;
+          }
+        `}
+      </style>
     </div>
   );
 };
