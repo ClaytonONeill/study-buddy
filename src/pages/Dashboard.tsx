@@ -309,16 +309,22 @@ const Dashboard = () => {
           {/* Tools  */}
           <div className="bg-white shadow rounded-lg p-4 border border-gray-300">
             <h3 className="font-semibold mb-3">Tools</h3>
+            
             <div className="flex items-center gap-4 border border-gray-300 rounded-lg p-4">
-              <div className="w-20 h-28 rounded-xl border border-gray-300 grid place-items-center">
-                <span className="text-3xl">F</span>
-              </div>
+              
+                 <button
+                 onClick={() => navigate("/flashcards")}
+                   className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition hover:cursor-pointer"
+                   >
+                   Flash Card Generator
+                 </button>
+             
               <div>
-                <p className="font-semibold">Flash Card Generator</p>
                 <p className="text-gray-500 text-sm">
-                  Create study cards from notes (coming soon)
+                  (Create study cards from notes)
                 </p>
               </div>
+              
             </div>
           </div>
         </div>
