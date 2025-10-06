@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import AddCertification from "./pages/AddCertification";
 import UserProfile from "./pages/UserProfilePage";
 import CertificationOverviewPage from "./pages/CertificationOverview";
+import Flashcards from "./pages/FlashCards"
 
 // Types
 import type { UserProfile as UserProfileType } from "./types/UserProfile";
@@ -120,6 +121,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CertificationOverviewPage />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/flashcards"
+          element={
+            <ProtectedRoute>
+              <Flashcards />
             </ProtectedRoute>
           }
         />
