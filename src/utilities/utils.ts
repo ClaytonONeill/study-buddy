@@ -17,3 +17,10 @@ export const getLevelStyles = (level: string): string => {
       return "bg-gray-100 text-gray-800 border-gray-300";
   }
 };
+
+export const formatUserRole = (role: string) =>
+  role.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
+export const parseHtmlContent = (htmlString: string) => {
+  return { __html: htmlString };
+};

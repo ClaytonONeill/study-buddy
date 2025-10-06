@@ -1,5 +1,5 @@
 // Modules
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -8,7 +8,17 @@ import CertificationDetailModal from "../components/CertificationDetailModal";
 // Services
 import { handleCertificationSearch } from "../services/userActions";
 
+// Types
+import type { UserProfile as UserProfileType } from "../types/UserProfile";
+
+// Utils
+import { formatUserRole } from "../utilities/utils";
+
 // Interfaces
+interface AddCertificationProps {
+  userProfile: UserProfileType;
+}
+
 interface Certification {
   title: string;
   uid: string;
@@ -52,7 +62,7 @@ const levelRank: Record<string, number> = {
   advanced: 3,
 };
 
-const AddCertification: React.FC = () => {
+const AddCertification = ({ userProfile }: AddCertificationProps) => {
   // State
   const [results, setResults] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +75,9 @@ const AddCertification: React.FC = () => {
   const [selectedCertification, setSelectedCertification] =
     useState<Certification | null>(null);
 
+  // Success message state
+  const [showSuccess, setShowSuccess] = useState(false);
+
   // Hooks
   const navigate = useNavigate();
 
@@ -76,10 +89,9 @@ const AddCertification: React.FC = () => {
     const fetchCertifications = async () => {
       try {
         setLoading(true);
-
         const data = await handleCertificationSearch({
           type: "certifications",
-          role: "security-engineer,ip-admin",
+          role: userProfile.user_role,
         });
 
         const certs: Certification[] = data.certifications ?? [];
@@ -102,7 +114,7 @@ const AddCertification: React.FC = () => {
     };
 
     fetchCertifications();
-  }, []);
+  }, [userProfile.user_role]);
 
   // Methods
   const handleBack = () => {
@@ -126,6 +138,14 @@ const AddCertification: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedCertification(null);
+  };
+
+  // Handle successful add from modal
+  const handleAddSuccess = () => {
+    setIsModalOpen(false);
+    setSelectedCertification(null);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2500);
   };
 
   // Convert Certification to CertificationDetails format for modal
@@ -166,6 +186,21 @@ const AddCertification: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen p-6 bg-white">
+      {/* Success Message */}
+      {showSuccess && (
+        <div
+          className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ease-in-out"
+          style={{ animation: "fadeInOut 2.5s" }}
+        >
+          <div className="bg-green-100 border border-green-300 text-green-800 px-6 py-3 rounded-lg shadow-lg text-lg font-semibold flex items-center gap-2 animate-bounce-in">
+            <span role="img" aria-label="success">
+              ✅
+            </span>
+            Certification added!
+          </div>
+        </div>
+      )}
+
       {/* Top Controls */}
       <div className="w-full max-w-3xl mb-4 flex justify-between items-center gap-4">
         {/* Back Button */}
@@ -178,6 +213,11 @@ const AddCertification: React.FC = () => {
       </div>
 
       <h1 className="text-2xl font-bold mb-6">Available Certifications</h1>
+      <h2 className="mb-2">
+        {`Custom certification recommendations based on your role as a ${formatUserRole(
+          userProfile.user_role
+        )}`}
+      </h2>
       {/* Divider */}
       <div className="w-full max-w-3xl mb-6 border-t border-gray-300 opacity-60"></div>
       {/* Sort & Filter Controls */}
@@ -244,8 +284,24 @@ const AddCertification: React.FC = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           certificationData={convertToModalData(selectedCertification)}
+          onAddSuccess={handleAddSuccess}
         />
       )}
+
+      {/* Animation keyframes */}
+      <style>
+        {`
+          @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px);}
+            10% { opacity: 1; transform: translateY(0);}
+            90% { opacity: 1; transform: translateY(0);}
+            100% { opacity: 0; transform: translateY(-20px);}
+          }
+          .animate-bounce-in {
+            animation: fadeInOut 2.5s;
+          }
+        `}
+      </style>
     </div>
   );
 };
